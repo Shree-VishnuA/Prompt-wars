@@ -271,7 +271,7 @@ function ThemeToggle({ theme, toggleTheme }) {
   );
 }
 
-export default function Layout() {
+export default function Layout({ onReturnToLanding } = {}) {
   const { health, user, account, activeTab, setActiveTab, serverOffline, fetchHealth, theme, toggleTheme } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
 
@@ -360,6 +360,15 @@ export default function Layout() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {onReturnToLanding && (
+            <button
+              type="button"
+              onClick={onReturnToLanding}
+              className="px-2 py-1 rounded text-xs font-mono text-slate-700 hover:text-slate-900 border border-slate-200 bg-slate-50 transition-colors"
+            >
+              Overview
+            </button>
+          )}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-mono rounded border bg-slate-50 text-slate-700 border-slate-200">
             <span
@@ -407,6 +416,15 @@ export default function Layout() {
                 <p className="text-xs text-slate-500 truncate">
                   Transaction Intent Firewall
                 </p>
+                {onReturnToLanding && (
+                  <button
+                    type="button"
+                    onClick={onReturnToLanding}
+                    className="mt-1 text-[11px] font-mono text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline flex items-center gap-1 transition-colors"
+                  >
+                    <span>← Problem & Overview</span>
+                  </button>
+                )}
               </div>
             </div>
 
