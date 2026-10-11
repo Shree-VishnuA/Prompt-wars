@@ -10,6 +10,8 @@ import AuthButton from './AuthButton.jsx';
 import ReplayLab from './ReplayLab.jsx';
 import BenchmarkPage from './BenchmarkPage.jsx';
 import AuditLog from './AuditLog.jsx';
+import ErrorBoundary from './ErrorBoundary.jsx';
+import Toast from './Toast.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -140,7 +142,7 @@ const TABS = [
 ];
 
 export default function Layout() {
-  const { health, user, account, activeTab, setActiveTab } = useApp();
+  const { health, user, account, activeTab, setActiveTab, serverOffline, fetchHealth } = useApp();
 
   const currentTab = TABS.find(
     (t) => t.id.toLowerCase() === (activeTab || '').toLowerCase() || t.label.toLowerCase() === (activeTab || '').toLowerCase()
@@ -148,8 +150,34 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+      {/* Global Offline / Server-Unreachable Banner */}
+      {serverOffline && (
+        <div
+          role="alert"
+          data-testid="offline-banner"
+          className="bg-rose-950/95 border-b border-rose-500/50 text-rose-200 px-4 py-2.5 text-xs font-mono flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50 shadow-lg backdrop-blur-md"
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping shrink-0" />
+            <span className="font-bold uppercase tracking-wider text-rose-100">
+              Server Unreachable / Offline:
+            </span>
+            <span className="text-slate-300">
+              Backend health check poll failed. Service is currently offline or unreachable.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => fetchHealth && fetchHealth()}
+            className="px-3 py-1 rounded bg-rose-900/80 hover:bg-rose-800 text-rose-100 border border-rose-600/50 text-[11px] font-semibold transition-colors"
+          >
+            Retry connection
+          </button>
+        </div>
+      )}
+
       {/* Top Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3.5 gap-4">
             {/* Logo and Brand */}
@@ -227,13 +255,32 @@ export default function Layout() {
         </div>
       </header>
 
-      {/* Main Area */}
+      {/* Main Area with ErrorBoundary around each tab */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentTab === 'Firewall' && <FirewallPlaceholder />}
-        {currentTab === 'Replay Lab' && <ReplayLab />}
-        {currentTab === 'Benchmark' && <BenchmarkPage />}
-        {currentTab === 'Audit' && <AuditLog />}
+        {currentTab === 'Firewall' && (
+          <ErrorBoundary panelName="Firewall">
+            <FirewallPlaceholder />
+          </ErrorBoundary>
+        )}
+        {currentTab === 'Replay Lab' && (
+          <ErrorBoundary panelName="Replay Lab">
+            <ReplayLab />
+          </ErrorBoundary>
+        )}
+        {currentTab === 'Benchmark' && (
+          <ErrorBoundary panelName="Benchmark">
+            <BenchmarkPage />
+          </ErrorBoundary>
+        )}
+        {currentTab === 'Audit' && (
+          <ErrorBoundary panelName="Audit">
+            <AuditLog />
+          </ErrorBoundary>
+        )}
       </main>
+
+      {/* Accessible Toast Notifications */}
+      <Toast />
 
       {/* Footer */}
       <footer className="border-t border-slate-900 py-4 text-center text-xs text-slate-600">

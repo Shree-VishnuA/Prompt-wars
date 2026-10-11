@@ -12,7 +12,10 @@ export const ACTIONS = {
   SET_HISTORY: 'SET_HISTORY',
   ADD_HISTORY: 'ADD_HISTORY',
   SET_ACTIVE_TAB: 'SET_ACTIVE_TAB',
-  SET_DRAFT_INPUT: 'SET_DRAFT_INPUT'
+  SET_DRAFT_INPUT: 'SET_DRAFT_INPUT',
+  SET_SERVER_OFFLINE: 'SET_SERVER_OFFLINE',
+  ADD_TOAST: 'ADD_TOAST',
+  REMOVE_TOAST: 'REMOVE_TOAST'
 };
 
 export const initialState = {
@@ -25,7 +28,9 @@ export const initialState = {
   error: null,
   history: [],
   activeTab: 'Firewall',
-  draftInput: null
+  draftInput: null,
+  serverOffline: false,
+  toasts: []
 };
 
 export function createServiceDegradedVerdict(errorMsg = 'Service unavailable or network failure') {
@@ -134,6 +139,24 @@ export function appReducer(state, action) {
     case ACTIONS.SET_DRAFT_INPUT:
       return { ...state, draftInput: action.payload };
 
+    case ACTIONS.SET_SERVER_OFFLINE:
+      return { ...state, serverOffline: Boolean(action.payload) };
+
+    case ACTIONS.ADD_TOAST: {
+      const newToast = action.payload;
+      if (!newToast || !newToast.id) return state;
+      return {
+        ...state,
+        toasts: [...state.toasts, newToast]
+      };
+    }
+
+    case ACTIONS.REMOVE_TOAST:
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.payload)
+      };
+
     default:
       return state;
   }
@@ -147,64 +170,126 @@ export function AppProvider({ children, initialValue = {} }) {
     ...initialValue
   });
 
+  const removeToast = useCallback((id) => {
+    dispatch({ type: ACTIONS.REMOVE_TOAST, payload: id });
+  }, []);
+
+  const addToast = useCallback(
+    (message, type = 'error', duration = 5000) => {
+      const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      let msg = message;
+      if (typeof msg !== 'string') {
+        msg = (msg && (msg.message || msg.error)) || 'An error occurred';
+      }
+      dispatch({
+        type: ACTIONS.ADD_TOAST,
+        payload: { id, message: msg, type }
+      });
+      if (duration > 0) {
+        setTimeout(() => {
+          removeToast(id);
+        }, duration);
+      }
+      return id;
+    },
+    [removeToast]
+  );
+
+  const fetchHealth = useCallback(async () => {
+    try {
+      const res = await api.getHealth();
+      if (res && res.ok && res.data) {
+        dispatch({ type: ACTIONS.SET_HEALTH, payload: res.data });
+        dispatch({ type: ACTIONS.SET_SERVER_OFFLINE, payload: false });
+        return res.data;
+      } else {
+        dispatch({ type: ACTIONS.SET_SERVER_OFFLINE, payload: true });
+        return null;
+      }
+    } catch {
+      dispatch({ type: ACTIONS.SET_SERVER_OFFLINE, payload: true });
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
 
     async function initUser() {
-      const res = await api.authMe();
-      if (isMounted && res.ok && res.data) {
-        if (res.data.user) {
-          dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+      try {
+        const res = await api.authMe();
+        if (isMounted && res.ok && res.data) {
+          if (res.data.user) {
+            dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+          }
+          if (res.data.auth) {
+            dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
+          }
         }
-        if (res.data.auth) {
-          dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
-        }
+      } catch {
+        // Handled silently
       }
     }
 
-    async function fetchHealth() {
-      const res = await api.getHealth();
-      if (isMounted && res.ok && res.data) {
-        dispatch({ type: ACTIONS.SET_HEALTH, payload: res.data });
+    async function initHealth() {
+      if (isMounted) {
+        await fetchHealth();
       }
     }
 
     async function fetchAccount() {
-      const res = await api.getAccount();
-      if (isMounted && res.ok && res.data) {
-        dispatch({ type: ACTIONS.SET_ACCOUNT, payload: res.data });
+      try {
+        const res = await api.getAccount();
+        if (isMounted && res.ok && res.data) {
+          dispatch({ type: ACTIONS.SET_ACCOUNT, payload: res.data });
+        }
+      } catch {
+        // Handled silently
       }
     }
 
     initUser();
-    fetchHealth();
+    initHealth();
     fetchAccount();
 
-    const interval = setInterval(fetchHealth, 30000);
+    const interval = setInterval(() => {
+      if (isMounted) {
+        fetchHealth();
+      }
+    }, 30000);
+
     return () => {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [fetchHealth]);
 
   const refreshUser = useCallback(async () => {
-    const res = await api.authMe();
-    if (res.ok && res.data) {
-      if (res.data.user) dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
-      if (res.data.auth) dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
-      return res.data;
+    try {
+      const res = await api.authMe();
+      if (res.ok && res.data) {
+        if (res.data.user) dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+        if (res.data.auth) dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
+        return res.data;
+      }
+    } catch (err) {
+      addToast(err.message || 'Failed to refresh user', 'error');
     }
     return null;
-  }, []);
+  }, [addToast]);
 
   const refreshAccount = useCallback(async () => {
-    const res = await api.getAccount();
-    if (res.ok && res.data) {
-      dispatch({ type: ACTIONS.SET_ACCOUNT, payload: res.data });
-      return res.data;
+    try {
+      const res = await api.getAccount();
+      if (res.ok && res.data) {
+        dispatch({ type: ACTIONS.SET_ACCOUNT, payload: res.data });
+        return res.data;
+      }
+    } catch (err) {
+      addToast(err.message || 'Failed to refresh account', 'error');
     }
     return null;
-  }, []);
+  }, [addToast]);
 
   const value = {
     state,
@@ -219,6 +304,11 @@ export function AppProvider({ children, initialValue = {} }) {
     history: state.history,
     activeTab: state.activeTab,
     draftInput: state.draftInput,
+    serverOffline: state.serverOffline,
+    toasts: state.toasts,
+    addToast,
+    removeToast,
+    fetchHealth,
     refreshUser,
     refreshAccount,
     setUser: (u) => dispatch({ type: ACTIONS.SET_USER, payload: u }),
@@ -230,7 +320,8 @@ export function AppProvider({ children, initialValue = {} }) {
     setError: (e) => dispatch({ type: ACTIONS.SET_ERROR, payload: e }),
     setHistory: (hist) => dispatch({ type: ACTIONS.SET_HISTORY, payload: hist }),
     setActiveTab: (tab) => dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: tab }),
-    setDraftInput: (input) => dispatch({ type: ACTIONS.SET_DRAFT_INPUT, payload: input })
+    setDraftInput: (input) => dispatch({ type: ACTIONS.SET_DRAFT_INPUT, payload: input }),
+    setServerOffline: (off) => dispatch({ type: ACTIONS.SET_SERVER_OFFLINE, payload: off })
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -245,7 +336,7 @@ export function useApp() {
 }
 
 export function useAnalyze() {
-  const { dispatch } = useApp();
+  const { dispatch, addToast } = useApp();
 
   const runAnalyze = useCallback(
     async (instruction, memo = '') => {
@@ -256,16 +347,23 @@ export function useAnalyze() {
         const res = await api.analyze({ instruction, memo });
         let finalVerdict = null;
 
-        if (res.ok && res.data && res.data.decision) {
+        if (res.ok && res.data && typeof res.data === 'object' && res.data.decision) {
           finalVerdict = res.data;
-        } else if (res.data && res.data.decision) {
+        } else if (res.data && typeof res.data === 'object' && res.data.decision) {
           // Even on 400 Bad Request or handled policy rejections, server sends a verdict object
           finalVerdict = res.data;
         } else {
-          // Network failure, timeout, or server unavailable -> fail-closed
-          const errorMsg = res.error || 'Network error or service unavailable';
+          // Network failure, timeout, non-JSON error, or 429
+          const is429 = res?.status === 429;
+          const errorMsg = is429
+            ? 'Too many requests, wait a moment'
+            : res?.error || 'Network error or service unavailable';
+
           finalVerdict = createServiceDegradedVerdict(errorMsg);
           dispatch({ type: ACTIONS.SET_ERROR, payload: errorMsg });
+          if (addToast) {
+            addToast(errorMsg, 'error');
+          }
         }
 
         dispatch({ type: ACTIONS.SET_VERDICT, payload: finalVerdict });
@@ -275,12 +373,15 @@ export function useAnalyze() {
         const fallback = createServiceDegradedVerdict(errorMsg);
         dispatch({ type: ACTIONS.SET_ERROR, payload: errorMsg });
         dispatch({ type: ACTIONS.SET_VERDICT, payload: fallback });
+        if (addToast) {
+          addToast(errorMsg, 'error');
+        }
         return fallback;
       } finally {
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       }
     },
-    [dispatch]
+    [dispatch, addToast]
   );
 
   return { runAnalyze };

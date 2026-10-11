@@ -88,11 +88,11 @@ function getStatusStyles(status) {
   }
 }
 
-function TraceRow({ step, isFirstBlock, isLast }) {
-  const [expanded, setExpanded] = useState(isFirstBlock || (step.findings && step.findings.length > 0));
-  const styles = getStatusStyles(step.status);
-  const layerTitle = getLayerTitle(step.layer);
-  const hasFindings = Array.isArray(step.findings) && step.findings.length > 0;
+function TraceRow({ step = {}, isFirstBlock, isLast }) {
+  const [expanded, setExpanded] = useState(isFirstBlock || (step?.findings && step.findings.length > 0));
+  const styles = getStatusStyles(step?.status);
+  const layerTitle = getLayerTitle(step?.layer);
+  const hasFindings = Array.isArray(step?.findings) && step.findings.length > 0;
 
   return (
     <div className="relative flex items-start gap-4 pb-6 last:pb-2 group">
@@ -185,7 +185,7 @@ function TraceRow({ step, isFirstBlock, isLast }) {
 export default function TraceTimeline({ verdict: propVerdict } = {}) {
   const { verdict: contextVerdict } = useApp();
   const verdict = propVerdict !== undefined ? propVerdict : contextVerdict;
-  const trace = verdict?.trace || [];
+  const trace = Array.isArray(verdict?.trace) ? verdict.trace : [];
 
   if (!verdict || trace.length === 0) {
     return (
@@ -204,7 +204,7 @@ export default function TraceTimeline({ verdict: propVerdict } = {}) {
   }
 
   // Find the FIRST blocking layer
-  const firstBlockIndex = trace.findIndex((t) => t.status === 'block');
+  const firstBlockIndex = trace.findIndex((t) => t?.status === 'block');
 
   return (
     <div

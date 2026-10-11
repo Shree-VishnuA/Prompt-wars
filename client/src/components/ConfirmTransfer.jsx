@@ -47,7 +47,7 @@ export default function ConfirmTransfer({ verdict: propVerdict } = {}) {
   const isExpired = secondsRemaining <= 0;
   const isActionDisabled = used || isExpired || executing;
 
-  const intent = verdict.extracted_intent || {};
+  const intent = (verdict && typeof verdict.extracted_intent === 'object' && verdict.extracted_intent) || {};
   const recipientName = intent.recipient_name || intent.recipient_id || 'Verified Counterparty';
   const amountPaise = intent.amount_paise || 0;
 
@@ -68,7 +68,9 @@ export default function ConfirmTransfer({ verdict: propVerdict } = {}) {
           balance_paise: res.data.balance_paise
         });
       } else {
-        const reason = res.data?.reason || res.error || 'Execution rejected';
+        const reason = res.status === 429
+          ? 'Too many requests, wait a moment'
+          : res.data?.reason || res.error || 'Execution rejected';
         setExecutionResult({
           status: 'rejected',
           reason

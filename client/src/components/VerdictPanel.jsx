@@ -189,8 +189,10 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
     );
   }
 
-  const isApproved = verdict.decision === 'APPROVED';
-  const categoryLabel = getThreatCategoryLabel(verdict.threat_category);
+  const decision = verdict.decision || 'BLOCKED';
+  const isApproved = decision === 'APPROVED';
+  const threatCategory = verdict.threat_category || (isApproved ? 'BENIGN' : 'UNKNOWN');
+  const categoryLabel = getThreatCategoryLabel(threatCategory);
   const truncatedRationale = (verdict.rationale || '').slice(0, 300);
 
   return (
@@ -227,7 +229,7 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           )}
-          <span>{verdict.decision}</span>
+          <span>{decision}</span>
         </div>
 
         {/* Threat Category Chip */}
@@ -254,7 +256,7 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
       {/* Grid: Risk Score Gauge & Request Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* RiskBadge Gauge */}
-        <RiskBadge score={verdict.risk_score} level={verdict.risk_level} />
+        <RiskBadge score={verdict.risk_score ?? 0} level={verdict.risk_level || 'LOW'} />
 
         {/* Request Execution Meta */}
         <div className="rounded-lg bg-slate-950/80 border border-slate-800 p-3.5 flex flex-col justify-between text-xs font-mono">

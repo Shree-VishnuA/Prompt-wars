@@ -42,15 +42,21 @@ async function request(url, options = {}) {
     }
 
     if (!res.ok) {
-      const errorMsg =
-        (data && typeof data === 'object' && (data.error || data.message)) ||
-        res.statusText ||
-        `HTTP ${res.status}`;
+      let errorMsg;
+      if (res.status === 429) {
+        errorMsg = 'Too many requests, wait a moment';
+      } else {
+        const raw =
+          (data && typeof data === 'object' && (data.error || data.message)) ||
+          res.statusText ||
+          `HTTP ${res.status}`;
+        errorMsg = typeof raw === 'string' ? raw : JSON.stringify(raw);
+      }
       return {
         ok: false,
         status: res.status,
         data,
-        error: typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg)
+        error: errorMsg
       };
     }
 
