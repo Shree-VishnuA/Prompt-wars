@@ -3,12 +3,18 @@ import { config } from '../config.js';
 let consecutiveFailures = 0;
 let circuitOpenedAt = 0;
 let lastCallFailed = false;
+let lastLlmError = null;
 const CIRCUIT_RESET_MS = 30000; // 30 seconds
 
 export function resetCircuitBreaker() {
   consecutiveFailures = 0;
   circuitOpenedAt = 0;
   lastCallFailed = false;
+  lastLlmError = null;
+}
+
+export function getLastLlmError() {
+  return lastLlmError;
 }
 
 function isCircuitOpen() {
@@ -19,6 +25,8 @@ function isCircuitOpen() {
     // Cooldown elapsed; half-open/closed
     circuitOpenedAt = 0;
     consecutiveFailures = 0;
+    lastCallFailed = false;
+    lastLlmError = null;
   }
   return false;
 }
@@ -38,14 +46,16 @@ function recordSuccess() {
   consecutiveFailures = 0;
   circuitOpenedAt = 0;
   lastCallFailed = false;
+  lastLlmError = null;
 }
 
-function recordFailure(reason) {
+function recordFailure(reason, details = null) {
   if (reason === 'NO_KEY' || reason === 'CIRCUIT_OPEN') {
     return;
   }
   consecutiveFailures++;
   lastCallFailed = true;
+  lastLlmError = details || reason;
   if (consecutiveFailures >= 3) {
     circuitOpenedAt = Date.now();
   }
@@ -162,8 +172,14 @@ export async function callGemini({ system = '', user = '', timeoutMs = 8000 } = 
     }
 
     if (!res.ok) {
-      finalReason = 'HTTP_ERROR';
-      break;
+      let errBody = '';
+      try {
+        errBody = await res.text();
+      } catch {}
+      console.error(`[Gemini API Error] HTTP ${res.status}: ${errBody}`);
+      finalReason = res.status === 429 ? 'RATE_LIMIT' : 'HTTP_ERROR';
+      recordFailure(finalReason, `HTTP ${res.status}: ${errBody.slice(0, 150)}`);
+      return { ok: false, reason: finalReason, status: res.status, error: errBody };
     }
 
     // Success response parsing

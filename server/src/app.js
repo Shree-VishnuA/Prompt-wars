@@ -11,7 +11,7 @@ import { analyzeRouter } from './routes/analyze.js';
 import { authRouter } from './routes/auth.js';
 import { labRouter } from './routes/lab.js';
 import { sessionMiddleware } from './middleware/session.js';
-import { getLlmStatus } from './lib/gemini.js';
+import { getLlmStatus, getLastLlmError } from './lib/gemini.js';
 
 export function createApp() {
   const app = express();
@@ -75,6 +75,8 @@ export function createApp() {
       status: 'ok',
       service: 'bankism',
       llm: getLlmStatus(),
+      llm_model: config.geminiModel,
+      llm_error: getLastLlmError(),
       policy_version: '1.0.0'
     });
   };
