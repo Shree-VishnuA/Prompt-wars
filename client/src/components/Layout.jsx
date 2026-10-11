@@ -9,6 +9,7 @@ import ConfirmTransfer from './ConfirmTransfer.jsx';
 import AuthButton from './AuthButton.jsx';
 import ReplayLab from './ReplayLab.jsx';
 import BenchmarkPage from './BenchmarkPage.jsx';
+import AuditLog from './AuditLog.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -231,7 +232,7 @@ export default function Layout() {
         {currentTab === 'Firewall' && <FirewallPlaceholder />}
         {currentTab === 'Replay Lab' && <ReplayLab />}
         {currentTab === 'Benchmark' && <BenchmarkPage />}
-        {currentTab === 'Audit' && <AuditPlaceholder />}
+        {currentTab === 'Audit' && <AuditLog />}
       </main>
 
       {/* Footer */}
