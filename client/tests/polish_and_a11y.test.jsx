@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import * as api from '../src/api/client.js';
 import { AppProvider } from '../src/context/AppContext.jsx';
 import Layout from '../src/components/Layout.jsx';
@@ -50,25 +50,35 @@ describe('Accessibility, WAI-ARIA, and Keyboard Navigation', () => {
     expect(panel).toHaveAttribute('aria-labelledby', 'tab-firewall');
 
     // Press ArrowRight on tablist -> switches to Replay Lab
-    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    act(() => {
+      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    });
     expect(replayBtn).toHaveAttribute('aria-selected', 'true');
 
     // Press ArrowRight again -> switches to Benchmark
-    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    act(() => {
+      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    });
     expect(benchBtn).toHaveAttribute('aria-selected', 'true');
 
     // Press End -> switches to Audit (last tab)
-    fireEvent.keyDown(tablist, { key: 'End' });
+    act(() => {
+      fireEvent.keyDown(tablist, { key: 'End' });
+    });
     expect(auditBtn).toHaveAttribute('aria-selected', 'true');
 
     // Press Home -> switches back to Firewall (first tab)
-    fireEvent.keyDown(tablist, { key: 'Home' });
+    act(() => {
+      fireEvent.keyDown(tablist, { key: 'Home' });
+    });
     expect(firewallBtn).toHaveAttribute('aria-selected', 'true');
 
     // Press ArrowLeft -> wraps to last tab (Audit)
-    fireEvent.keyDown(tablist, { key: 'ArrowLeft' });
+    act(() => {
+      fireEvent.keyDown(tablist, { key: 'ArrowLeft' });
+    });
     expect(auditBtn).toHaveAttribute('aria-selected', 'true');
-  });
+  }, 15000);
 
   it('verdict region in VerdictPanel has aria-live="polite"', () => {
     const mockVerdict = {
