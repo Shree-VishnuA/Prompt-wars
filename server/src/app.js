@@ -9,6 +9,7 @@ import { bankRouter } from './routes/bank.js';
 import { executeRouter } from './routes/execute.js';
 import { analyzeRouter } from './routes/analyze.js';
 import { authRouter } from './routes/auth.js';
+import { labRouter } from './routes/lab.js';
 import { sessionMiddleware } from './middleware/session.js';
 import { getLlmStatus } from './lib/gemini.js';
 
@@ -79,6 +80,9 @@ export function createApp() {
 
   // Auth routes
   app.use('/api/auth', authRouter);
+
+  // Lab routes
+  app.use('/api/lab', labRouter);
 
 
   // 404 handler for unmatched routes
