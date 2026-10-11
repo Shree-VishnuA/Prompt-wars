@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext.jsx';
 import { formatPaise } from '../lib/format.js';
 
 export default function AccountCard() {
-  const { account, user, refreshAccount } = useApp();
+  const { account, user, refreshAccount, setDraftInput } = useApp();
   const [refreshing, setRefreshing] = useState(false);
 
   const handleManualRefresh = async () => {
@@ -19,6 +19,14 @@ export default function AccountCard() {
   const accountId = account?.account_id || 'ACC-1001';
   const balancePaise = account?.balance_paise !== undefined ? account.balance_paise : 5000000;
   const recentTransactions = (account?.history || []).slice(0, 5);
+  const contacts = account?.contacts?.length
+    ? account.contacts
+    : [
+        { id: 'c_rahul', name: 'Rahul Sharma', alias: 'rahul' },
+        { id: 'c_priya', name: 'Priya Nair', alias: 'priya' },
+        { id: 'c_amit', name: 'Amit Verma', alias: 'amit' },
+        { id: 'c_mom', name: 'Mom', alias: 'mom' }
+      ];
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
@@ -118,6 +126,45 @@ export default function AccountCard() {
             })}
           </div>
         )}
+      </div>
+
+      {/* Whitelisted Payees / Registered Beneficiaries Directory */}
+      <div className="pt-3 border-t border-slate-100">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
+            Whitelisted Payees ({contacts.length})
+          </span>
+          <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-mono font-medium">
+            Verified
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          {contacts.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() =>
+                setDraftInput &&
+                setDraftInput({
+                  instruction: `Send ₹500 to ${c.alias || c.name}`,
+                  memo: 'dinner split'
+                })
+              }
+              title={`Click to draft: Send ₹500 to ${c.name}`}
+              className="p-2 rounded bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-all hover:border-slate-300 group"
+            >
+              <div className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 truncate">
+                👤 {c.name}
+              </div>
+              <div className="text-[10px] font-mono text-slate-500 truncate">
+                @{c.alias}
+              </div>
+            </button>
+          ))}
+        </div>
+        <p className="mt-1.5 text-[10px] text-slate-400 font-mono leading-tight">
+          Payments to unlisted entities (e.g. Aarav) are blocked by Intent Grounding.
+        </p>
       </div>
     </div>
   );

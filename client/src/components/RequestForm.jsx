@@ -163,13 +163,18 @@ export default function RequestForm() {
         {/* Instruction Textarea */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label
-              htmlFor="instruction-field"
-              className="text-xs font-medium text-slate-700 flex items-center gap-1.5"
-            >
-              <span>Instruction</span>
-              <span className="text-rose-600">*</span>
-            </label>
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="instruction-field"
+                className="text-xs font-medium text-slate-700 flex items-center gap-1.5"
+              >
+                <span>Instruction</span>
+                <span className="text-rose-600">*</span>
+              </label>
+              <span className="hidden sm:inline-block text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                Payees: Rahul, Priya, Amit, Mom
+              </span>
+            </div>
             <span
               className={`text-xs font-mono ${
                 instruction.length >= 480
