@@ -426,14 +426,14 @@ export default function Layout() {
           </div>
 
           {/* Sidebar Footer: Account Context, Auth, Health */}
-          <div className="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-2.5">
+          <div className="p-3.5 border-t border-slate-200 bg-slate-50 space-y-2.5">
             {account && (
-              <div className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-xs font-mono text-slate-700 dark:text-slate-300">
-                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] uppercase">
+              <div className="px-3 py-2 bg-white border border-slate-200 rounded-md text-xs font-mono text-slate-700">
+                <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase">
                   <span>Active Account</span>
-                  <span className="text-slate-900 dark:text-slate-200 font-semibold">{account.account_id || 'ACC-1001'}</span>
+                  <span className="text-slate-900 font-semibold">{account.account_id || 'ACC-1001'}</span>
                 </div>
-                <div className="mt-1 text-sm font-bold text-slate-900 dark:text-slate-100">
+                <div className="mt-1 text-sm font-bold text-slate-900">
                   ₹{((account.balance_paise || 0) / 100).toLocaleString('en-IN')}
                 </div>
               </div>
