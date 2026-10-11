@@ -181,10 +181,37 @@ export async function runPipeline({
       }
     }
 
-    // Merge normalization + validation traces (already added) with policy trace
-    // The policy trace may include validation again (it re-evaluates R1), so we replace
-    // our validation/normalization traces and merge the rest
-    const finalTrace = [...trace, ...policyTrace];
+    // Deduplicate traces in canonical chronological order
+    const layerOrder = [
+      'validation',
+      'normalization',
+      'deterministic',
+      'llm_extractor',
+      'llm_judge',
+      'grounding',
+      'policy'
+    ];
+
+    const traceMap = new Map();
+    for (const entry of trace) {
+      traceMap.set(entry.layer, entry);
+    }
+    for (const entry of policyTrace) {
+      if (traceMap.has(entry.layer)) {
+        const existing = traceMap.get(entry.layer);
+        traceMap.set(entry.layer, {
+          ...entry,
+          duration_ms: existing.duration_ms || entry.duration_ms || 0,
+          findings: Array.from(new Set([...(existing.findings || []), ...(entry.findings || [])]))
+        });
+      } else {
+        traceMap.set(entry.layer, entry);
+      }
+    }
+
+    const finalTrace = layerOrder
+      .filter((layer) => traceMap.has(layer))
+      .map((layer) => traceMap.get(layer));
 
     const latency_ms = Date.now() - pipelineStart;
 

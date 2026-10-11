@@ -49,6 +49,7 @@ function StatusPill({ health }) {
 function FirewallPlaceholder() {
   const { verdict, loading } = useApp();
   const analysisRef = React.useRef(null);
+  const [viewMode, setViewMode] = React.useState('trace');
 
   // Smooth scroll to analysis workbench on mobile/tablet when analyzing
   React.useEffect(() => {
@@ -72,13 +73,64 @@ function FirewallPlaceholder() {
       <div
         ref={analysisRef}
         id="firewall-analysis-section"
-        className="lg:col-span-7 space-y-6 lg:sticky lg:top-6"
+        className="lg:col-span-7 space-y-4 lg:sticky lg:top-6"
       >
         <VerdictPanel />
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-          <TraceTimeline />
-          <JsonInspector />
+
+        {/* View Switcher Controls */}
+        <div className="flex items-center justify-between gap-3 px-0.5">
+          <div className="inline-flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-mono font-medium">
+            <button
+              type="button"
+              onClick={() => setViewMode('trace')}
+              className={`px-3 py-1 rounded-md transition-all ${
+                viewMode === 'trace'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              🛡️ Defense Trace
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('json')}
+              className={`px-3 py-1 rounded-md transition-all ${
+                viewMode === 'json'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {'{ }'} Raw JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('split')}
+              className={`hidden xl:inline-flex px-3 py-1 rounded-md transition-all ${
+                viewMode === 'split'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              ⊞ Side-by-Side
+            </button>
+          </div>
         </div>
+
+        {/* Dynamic Display */}
+        {viewMode === 'split' ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+            <TraceTimeline />
+            <JsonInspector />
+          </div>
+        ) : viewMode === 'json' ? (
+          <div>
+            <JsonInspector />
+          </div>
+        ) : (
+          <div>
+            <TraceTimeline />
+          </div>
+        )}
       </div>
     </div>
   );

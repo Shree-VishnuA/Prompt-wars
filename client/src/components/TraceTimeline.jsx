@@ -56,34 +56,34 @@ function getStatusStyles(status) {
   switch (status) {
     case 'pass':
       return {
-        badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-        dotBorder: 'border-emerald-300 bg-white',
-        line: 'bg-slate-200'
+        badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/80',
+        dotBorder: 'border-emerald-400 dark:border-emerald-600 bg-white dark:bg-slate-900',
+        line: 'bg-slate-200 dark:bg-slate-800'
       };
     case 'flag':
       return {
-        badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-        dotBorder: 'border-amber-300 bg-white',
-        line: 'bg-slate-200'
+        badgeBg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/80',
+        dotBorder: 'border-amber-400 dark:border-amber-600 bg-white dark:bg-slate-900',
+        line: 'bg-slate-200 dark:bg-slate-800'
       };
     case 'block':
       return {
-        badgeBg: 'bg-rose-50 text-rose-800 border-rose-200',
-        dotBorder: 'border-rose-300 bg-white',
-        line: 'bg-slate-200'
+        badgeBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/80',
+        dotBorder: 'border-rose-400 dark:border-rose-600 bg-white dark:bg-slate-900',
+        line: 'bg-slate-200 dark:bg-slate-800'
       };
     case 'error':
       return {
-        badgeBg: 'bg-red-50 text-red-800 border-red-200',
-        dotBorder: 'border-red-300 bg-white',
-        line: 'bg-slate-200'
+        badgeBg: 'bg-red-50 dark:bg-red-950/60 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800/80',
+        dotBorder: 'border-red-400 dark:border-red-600 bg-white dark:bg-slate-900',
+        line: 'bg-slate-200 dark:bg-slate-800'
       };
     case 'skipped':
     default:
       return {
-        badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
-        dotBorder: 'border-slate-300 bg-white',
-        line: 'bg-slate-200'
+        badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        dotBorder: 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900',
+        line: 'bg-slate-200 dark:bg-slate-800'
       };
   }
 }
@@ -95,40 +95,40 @@ function TraceRow({ step = {}, isFirstBlock, isLast }) {
   const hasFindings = Array.isArray(step?.findings) && step.findings.length > 0;
 
   return (
-    <div className="relative flex items-start gap-4 pb-5 last:pb-1 group">
+    <div className="relative flex items-start gap-3 pb-2.5 last:pb-0 group">
       {/* Vertical Timeline Connector Line */}
       {!isLast && (
         <span
-          className={`absolute left-[15px] top-7 bottom-0 w-0.5 ${styles.line}`}
+          className={`absolute left-[13px] top-6 bottom-0 w-0.5 ${styles.line}`}
           aria-hidden="true"
         />
       )}
 
       {/* Status Node Icon */}
       <div
-        className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full border shrink-0 ${styles.dotBorder}`}
+        className={`relative z-10 flex items-center justify-center w-7 h-7 rounded-full border shrink-0 transition-transform group-hover:scale-105 ${styles.dotBorder}`}
       >
         <StatusIcon status={step.status} />
       </div>
 
-      {/* Layer Content Card */}
-      <div className="flex-1 min-w-0 rounded-md bg-slate-50 border border-slate-200 p-3.5 transition-colors hover:border-slate-300">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Layer Content Card - Compact & Sleek */}
+      <div className="flex-1 min-w-0 rounded-lg bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 px-3.5 py-2 transition-all hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center flex-wrap gap-2">
-            <span className="text-sm font-semibold text-slate-900">
+            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
               {layerTitle}
             </span>
 
             {/* Status Badge */}
             <span
-              className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-medium ${styles.badgeBg}`}
+              className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border font-medium ${styles.badgeBg}`}
             >
               {step.status}
             </span>
 
             {/* FIRST BLOCKING LAYER HIGHLIGHT */}
             {isFirstBlock && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-rose-100 text-rose-800 border border-rose-200 uppercase">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-rose-100 dark:bg-rose-950/70 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/80 uppercase">
                 <span>🛡️</span>
                 <span>Caught here</span>
               </span>
@@ -136,24 +136,24 @@ function TraceRow({ step = {}, isFirstBlock, isLast }) {
           </div>
 
           {/* Duration Badge */}
-          <div className="text-xs font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0">
+          <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 shrink-0">
             {step.duration_ms !== undefined ? `${step.duration_ms} ms` : '—'}
           </div>
         </div>
 
         {/* Summary text */}
-        <p className="text-xs text-slate-600 mt-1.5 font-sans leading-relaxed">
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-sans leading-relaxed">
           {step.summary || 'No summary reported for this layer.'}
         </p>
 
         {/* Expandable Findings List */}
         {hasFindings && (
-          <div className="mt-2.5 pt-2 border-t border-slate-200">
+          <div className="mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-slate-800">
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
               aria-label={`Toggle findings for ${layerTitle}`}
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-600 hover:text-slate-900 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
             >
               <svg
                 className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -168,9 +168,9 @@ function TraceRow({ step = {}, isFirstBlock, isLast }) {
             </button>
 
             {expanded && (
-              <ul className="mt-2 space-y-1 pl-2 border-l border-slate-300 text-xs font-mono text-slate-700">
+              <ul className="mt-1.5 space-y-1 pl-2 border-l-2 border-rose-300 dark:border-rose-800 text-xs font-mono text-slate-700 dark:text-slate-300">
                 {step.findings.map((f, i) => (
-                  <li key={i} className="text-[11px] text-rose-700 break-words py-0.5">
+                  <li key={i} className="text-[11px] text-rose-700 dark:text-rose-400 break-words py-0.5">
                     • {typeof f === 'string' ? f : JSON.stringify(f)}
                   </li>
                 ))}
@@ -192,12 +192,12 @@ export default function TraceTimeline({ verdict: propVerdict } = {}) {
     return (
       <div
         data-testid="trace-list"
-        className="rounded-lg border border-slate-200 bg-white p-6 text-center"
+        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center"
       >
         <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">
           Pipeline Execution Trace
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           No defense layers evaluated yet. Run an analysis above to see chronological layer inspection.
         </p>
       </div>
@@ -210,23 +210,23 @@ export default function TraceTimeline({ verdict: propVerdict } = {}) {
   return (
     <div
       data-testid="trace-list"
-      className="rounded-lg border border-slate-200 bg-white p-6"
+      className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs"
     >
-      <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <span>Defense Pipeline Trace</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               {trace.length} LAYERS
             </span>
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             Step-by-step audit of input sanitization, heuristic checks, AI validators, and policy logic.
           </p>
         </div>
 
         {verdict.latency_ms !== undefined && (
-          <div className="text-xs font-mono text-slate-700 bg-slate-50 px-2.5 py-1 rounded border border-slate-200 shrink-0">
+          <div className="text-xs font-mono font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 shrink-0">
             Total {verdict.latency_ms} ms
           </div>
         )}
