@@ -16,6 +16,16 @@ describe('Server health & baseline middleware', () => {
     expect(res.headers['x-request-id']).toBeDefined();
   });
 
+  it('GET /ping and /api/cron return 200 for keep-alive cron services', async () => {
+    const pingRes = await request(app).get('/ping');
+    expect(pingRes.status).toBe(200);
+    expect(pingRes.body.status).toBe('ok');
+
+    const cronRes = await request(app).get('/api/cron');
+    expect(cronRes.status).toBe(200);
+    expect(cronRes.body.status).toBe('ok');
+  });
+
   it('handles unknown routes with JSON 404', async () => {
     const res = await request(app).get('/unknown-route-12345');
 

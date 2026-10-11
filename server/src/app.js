@@ -69,15 +69,19 @@ export function createApp() {
   });
   app.use('/api', apiLimiter);
 
-  // GET /health
-  app.get('/health', (req, res) => {
+  // GET /health and keep-alive cron aliases (/ping, /api/cron)
+  const healthHandler = (req, res) => {
     res.status(200).json({
       status: 'ok',
       service: 'bankism',
       llm: getLlmStatus(),
       policy_version: '1.0.0'
     });
-  });
+  };
+
+  app.get('/health', healthHandler);
+  app.get('/ping', healthHandler);
+  app.get('/api/cron', healthHandler);
 
   // Bank routes
   app.use('/api/bank', bankRouter);
