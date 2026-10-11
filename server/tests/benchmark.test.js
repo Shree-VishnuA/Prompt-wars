@@ -125,9 +125,6 @@ describe('Benchmark Suite & cases.json', () => {
       expect(data.by_group).toHaveProperty('ambiguous');
 
       // Failures should be minimal or empty
-      if (data.failures.length > 0) {
-        console.log('Benchmark failures:', data.failures);
-      }
       expect(data.failures.length).toBeLessThanOrEqual(3);
     });
 

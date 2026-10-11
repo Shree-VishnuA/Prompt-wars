@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval": "vitest run tests/benchmark.test.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

@@ -514,7 +514,7 @@ export default function Layout({ onReturnToLanding } = {}) {
 
         {/* Main Content Area */}
         <div className="flex-1 min-w-0 flex flex-col bg-slate-50">
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 focus:outline-none">
             {currentTab === 'Firewall' && (
               <div role="tabpanel" id="panel-firewall" aria-labelledby="tab-firewall" tabIndex={0} className="focus:outline-none">
                 <ErrorBoundary panelName="Firewall">
