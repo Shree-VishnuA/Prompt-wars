@@ -273,7 +273,7 @@ describe('Layout component', () => {
 
     // Click "Replay Lab"
     fireEvent.click(screen.getByRole('button', { name: 'Replay Lab' }));
-    expect(screen.getByText(/Adversarial Testing Ground/i)).toBeInTheDocument();
+    expect(screen.getByText(/Adversarial Mutation Harness/i)).toBeInTheDocument();
 
     // Click "Benchmark"
     fireEvent.click(screen.getByRole('button', { name: 'Benchmark' }));

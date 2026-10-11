@@ -11,7 +11,8 @@ export const ACTIONS = {
   SET_ERROR: 'SET_ERROR',
   SET_HISTORY: 'SET_HISTORY',
   ADD_HISTORY: 'ADD_HISTORY',
-  SET_ACTIVE_TAB: 'SET_ACTIVE_TAB'
+  SET_ACTIVE_TAB: 'SET_ACTIVE_TAB',
+  SET_DRAFT_INPUT: 'SET_DRAFT_INPUT'
 };
 
 export const initialState = {
@@ -23,7 +24,8 @@ export const initialState = {
   loading: false,
   error: null,
   history: [],
-  activeTab: 'Firewall'
+  activeTab: 'Firewall',
+  draftInput: null
 };
 
 export function createServiceDegradedVerdict(errorMsg = 'Service unavailable or network failure') {
@@ -129,6 +131,9 @@ export function appReducer(state, action) {
     case ACTIONS.SET_ACTIVE_TAB:
       return { ...state, activeTab: action.payload };
 
+    case ACTIONS.SET_DRAFT_INPUT:
+      return { ...state, draftInput: action.payload };
+
     default:
       return state;
   }
@@ -213,6 +218,7 @@ export function AppProvider({ children, initialValue = {} }) {
     error: state.error,
     history: state.history,
     activeTab: state.activeTab,
+    draftInput: state.draftInput,
     refreshUser,
     refreshAccount,
     setUser: (u) => dispatch({ type: ACTIONS.SET_USER, payload: u }),
@@ -223,7 +229,8 @@ export function AppProvider({ children, initialValue = {} }) {
     setLoading: (l) => dispatch({ type: ACTIONS.SET_LOADING, payload: l }),
     setError: (e) => dispatch({ type: ACTIONS.SET_ERROR, payload: e }),
     setHistory: (hist) => dispatch({ type: ACTIONS.SET_HISTORY, payload: hist }),
-    setActiveTab: (tab) => dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: tab })
+    setActiveTab: (tab) => dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: tab }),
+    setDraftInput: (input) => dispatch({ type: ACTIONS.SET_DRAFT_INPUT, payload: input })
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

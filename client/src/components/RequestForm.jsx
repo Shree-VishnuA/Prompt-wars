@@ -79,10 +79,17 @@ export const SAMPLE_PROMPTS = [
 ];
 
 export default function RequestForm() {
-  const [instruction, setInstruction] = useState('');
-  const [memo, setMemo] = useState('');
-  const { loading } = useApp();
+  const { loading, draftInput } = useApp();
+  const [instruction, setInstruction] = useState(draftInput?.instruction || '');
+  const [memo, setMemo] = useState(draftInput?.memo || '');
   const { runAnalyze } = useAnalyze();
+
+  React.useEffect(() => {
+    if (draftInput) {
+      if (draftInput.instruction !== undefined) setInstruction(draftInput.instruction);
+      if (draftInput.memo !== undefined) setMemo(draftInput.memo || '');
+    }
+  }, [draftInput]);
 
   const isSubmitDisabled = !instruction.trim() || loading;
 
