@@ -51,7 +51,12 @@ export const PATTERN_GROUPS = {
     severity: 'high',
     category: 'MEMO_INJECTION',
     patterns: [
-      /\b(?:approve|authorize|execute|assistant|ai|bot|firewall|ignore|instruction|policy|override|bypass|transfer\s+all|send\s+all|change\s+the\s+amount|disable|whitelist)\b/i
+      /\b(?:approve\s+(?:all|this|the|transfer|payment)|authorize\s+(?:all|this|the|transfer)|execute\s+(?:all|this|the|transfer)|assistant\s*:|ai\s*:|bot\s*:|firewall\s*:|bypass\s+(?:firewall|guardrails|limits|rules)|transfer\s+all|send\s+all|change\s+the\s+amount|disable\s+(?:firewall|guardrails|security)|whitelist)\b/i,
+      /\b(?:assistant|ai|bot|firewall)\b/i,
+      /\b(?:new\s+instructions|instructions?\s*:)\b/i,
+      /\bignore\s+(?:all|any|the|your|my|these|those)?\s*(?:system|prompt|instruction|rule|guardrail|firewall|limit|security|policy)\b/i,
+      /\boverride\s+(?:all|any|the|your)?\s*(?:system|prompt|instruction|rule|guardrail|firewall|limit|security|policy)\b/i,
+      /\b(?:system|admin|ai)\s+override\b/i
     ]
   },
   DELIMITER_SPOOF: {
