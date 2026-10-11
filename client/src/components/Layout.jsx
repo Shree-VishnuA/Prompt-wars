@@ -2,6 +2,8 @@ import React from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import RequestForm from './RequestForm.jsx';
 import VerdictPanel from './VerdictPanel.jsx';
+import TraceTimeline from './TraceTimeline.jsx';
+import JsonInspector from './JsonInspector.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -41,6 +43,10 @@ function FirewallPlaceholder() {
     <div className="space-y-6">
       <RequestForm />
       <VerdictPanel />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <TraceTimeline />
+        <JsonInspector />
+      </div>
       <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-sm">
         <div className="flex items-start justify-between">
           <div>
