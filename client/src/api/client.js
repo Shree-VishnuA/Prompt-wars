@@ -1,4 +1,4 @@
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 30000;
 
 const API_BASE =
   typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
@@ -79,7 +79,7 @@ async function request(url, options = {}) {
       ok: false,
       status: isTimeout ? 408 : 0,
       data: null,
-      error: isTimeout ? 'Request timed out after 15 seconds' : err.message || 'Network request failed'
+      error: isTimeout ? 'Request timed out after 30 seconds' : err.message || 'Network request failed'
     };
   }
 }

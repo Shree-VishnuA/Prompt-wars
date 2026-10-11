@@ -102,17 +102,7 @@ function FirewallPlaceholder() {
             >
               {'{ }'} Raw JSON
             </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('split')}
-              className={`hidden xl:inline-flex px-3 py-1 rounded-md transition-all ${
-                viewMode === 'split'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              ⊞ Side-by-Side
-            </button>
+       
           </div>
         </div>
 

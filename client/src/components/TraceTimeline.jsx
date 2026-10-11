@@ -212,7 +212,7 @@ export default function TraceTimeline({ verdict: propVerdict } = {}) {
       data-testid="trace-list"
       className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs"
     >
-      <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <span>Defense Pipeline Trace</span>
