@@ -247,7 +247,7 @@ export function findAmounts(text) {
   const amounts = [];
 
   // Candidate patterns for amounts in context
-  const candidateRegex = /(?:[₹$€£]|Rs\.?|INR|USD|EUR|GBP)?\s*(?:-?\d+(?:,\d+)*(?:\.\d+)?(?:e[+-]?\d+)?|0x[0-9a-fA-F]+|(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[\s-]+(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|lakhs?|lacs?|crores?|and))*)\s*(?:k|lakhs?|lacs?)?\s*(?:rupees?|rs\.?|dollars?|euros?|pounds?|INR|USD|EUR|GBP)?/gi;
+  const candidateRegex = /(?:[₹$€£]|Rs\.?|INR|USD|EUR|GBP)?\s*(?:-?\d+(?:,\d+)*(?:\.\d+)?(?:e[+-]?\d+)?|0x[0-9a-fA-F]+|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b(?:[\s-]+(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|lakhs?|lacs?|crores?|and))*\b)\s*(?:k|lakhs?|lacs?)?\s*(?:rupees?|rs\.?|dollars?|euros?|pounds?|INR|USD|EUR|GBP)?/gi;
 
   let match;
   while ((match = candidateRegex.exec(text)) !== null) {
