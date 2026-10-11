@@ -6,6 +6,7 @@ import TraceTimeline from './TraceTimeline.jsx';
 import JsonInspector from './JsonInspector.jsx';
 import AccountCard from './AccountCard.jsx';
 import ConfirmTransfer from './ConfirmTransfer.jsx';
+import AuthButton from './AuthButton.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -195,12 +196,7 @@ export default function Layout() {
                 </div>
               )}
 
-              {user && (
-                <div className="hidden md:flex items-center gap-2 px-2.5 py-1 bg-slate-950/70 border border-slate-800 rounded-lg text-xs text-slate-300">
-                  <span className="w-2 h-2 rounded-full bg-slate-400" />
-                  <span className="font-medium text-slate-200">{user.name || user.id}</span>
-                </div>
-              )}
+              <AuthButton />
 
               <StatusPill health={health} />
             </div>

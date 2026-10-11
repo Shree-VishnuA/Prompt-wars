@@ -3,6 +3,7 @@ import * as api from '../api/client.js';
 
 export const ACTIONS = {
   SET_USER: 'SET_USER',
+  SET_AUTH: 'SET_AUTH',
   SET_HEALTH: 'SET_HEALTH',
   SET_ACCOUNT: 'SET_ACCOUNT',
   SET_VERDICT: 'SET_VERDICT',
@@ -15,6 +16,7 @@ export const ACTIONS = {
 
 export const initialState = {
   user: null,
+  auth: null,
   health: null,
   account: null,
   verdict: null,
@@ -67,6 +69,9 @@ export function appReducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_USER:
       return { ...state, user: action.payload };
+
+    case ACTIONS.SET_AUTH:
+      return { ...state, auth: action.payload };
 
     case ACTIONS.SET_HEALTH:
       return { ...state, health: action.payload };
@@ -142,8 +147,13 @@ export function AppProvider({ children, initialValue = {} }) {
 
     async function initUser() {
       const res = await api.authMe();
-      if (isMounted && res.ok && res.data?.user) {
-        dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+      if (isMounted && res.ok && res.data) {
+        if (res.data.user) {
+          dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+        }
+        if (res.data.auth) {
+          dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
+        }
       }
     }
 
@@ -172,6 +182,16 @@ export function AppProvider({ children, initialValue = {} }) {
     };
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const res = await api.authMe();
+    if (res.ok && res.data) {
+      if (res.data.user) dispatch({ type: ACTIONS.SET_USER, payload: res.data.user });
+      if (res.data.auth) dispatch({ type: ACTIONS.SET_AUTH, payload: res.data.auth });
+      return res.data;
+    }
+    return null;
+  }, []);
+
   const refreshAccount = useCallback(async () => {
     const res = await api.getAccount();
     if (res.ok && res.data) {
@@ -185,6 +205,7 @@ export function AppProvider({ children, initialValue = {} }) {
     state,
     dispatch,
     user: state.user,
+    auth: state.auth,
     health: state.health,
     account: state.account,
     verdict: state.verdict,
@@ -192,8 +213,10 @@ export function AppProvider({ children, initialValue = {} }) {
     error: state.error,
     history: state.history,
     activeTab: state.activeTab,
+    refreshUser,
     refreshAccount,
     setUser: (u) => dispatch({ type: ACTIONS.SET_USER, payload: u }),
+    setAuth: (a) => dispatch({ type: ACTIONS.SET_AUTH, payload: a }),
     setHealth: (h) => dispatch({ type: ACTIONS.SET_HEALTH, payload: h }),
     setAccount: (a) => dispatch({ type: ACTIONS.SET_ACCOUNT, payload: a }),
     setVerdict: (v) => dispatch({ type: ACTIONS.SET_VERDICT, payload: v }),
