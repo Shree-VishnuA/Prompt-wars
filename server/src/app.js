@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { rateLimit } from 'express-rate-limit';
 import { config } from './config.js';
 import { bankRouter } from './routes/bank.js';
+import { executeRouter } from './routes/execute.js';
 
 export function createApp() {
   const app = express();
@@ -62,6 +63,9 @@ export function createApp() {
 
   // Bank routes
   app.use('/api/bank', bankRouter);
+
+  // Execute route
+  app.use('/api', executeRouter);
 
 
   // 404 handler for unmatched routes
