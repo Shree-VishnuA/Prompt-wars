@@ -7,6 +7,8 @@ import { rateLimit } from 'express-rate-limit';
 import { config } from './config.js';
 import { bankRouter } from './routes/bank.js';
 import { executeRouter } from './routes/execute.js';
+import { analyzeRouter } from './routes/analyze.js';
+import { getLlmStatus } from './lib/gemini.js';
 
 export function createApp() {
   const app = express();
@@ -56,13 +58,16 @@ export function createApp() {
     res.status(200).json({
       status: 'ok',
       service: 'bankism',
-      llm: 'disabled',
+      llm: getLlmStatus(),
       policy_version: '1.0.0'
     });
   });
 
   // Bank routes
   app.use('/api/bank', bankRouter);
+
+  // Analyze + audit routes
+  app.use('/api', analyzeRouter);
 
   // Execute route
   app.use('/api', executeRouter);

@@ -68,9 +68,9 @@ describe('POST /api/execute endpoint', () => {
       amount_paise: 50000
     });
 
-    const [payloadB64, sig] = token.split('.');
-    const tamperedSig = sig.slice(0, -1) + (sig.endsWith('a') ? 'b' : 'a');
-    const tamperedToken = `${payloadB64}.${tamperedSig}`;
+    const [payloadB64] = token.split('.');
+    // Replace signature with a completely different fixed string (wrong HMAC)
+    const tamperedToken = `${payloadB64}.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`;
 
     const res = await request(app)
       .post('/api/execute')
@@ -80,6 +80,7 @@ describe('POST /api/execute endpoint', () => {
     expect(res.body.status).toBe('rejected');
     expect(res.body.reason).toBe('INVALID_SIGNATURE');
   });
+
 
   it('rejects expired token using vi.useFakeTimers', async () => {
     vi.useFakeTimers();

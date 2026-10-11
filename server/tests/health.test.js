@@ -9,12 +9,10 @@ describe('Server health & baseline middleware', () => {
     const res = await request(app).get('/health');
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      status: 'ok',
-      service: 'bankism',
-      llm: 'disabled',
-      policy_version: '1.0.0'
-    });
+    expect(res.body.status).toBe('ok');
+    expect(res.body.service).toBe('bankism');
+    expect(['online', 'degraded', 'disabled']).toContain(res.body.llm);
+    expect(res.body.policy_version).toBe('1.0.0');
     expect(res.headers['x-request-id']).toBeDefined();
   });
 

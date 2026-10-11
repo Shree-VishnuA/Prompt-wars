@@ -67,10 +67,9 @@ describe('token.js - mintIntentToken & verifyIntentToken & consumeNonce', () => 
       amount_paise: 50000
     });
 
-    const [payloadB64, sig] = token.split('.');
-    // Modify one character in signature
-    const tamperedSig = sig.slice(0, -1) + (sig.slice(-1) === 'a' ? 'b' : 'a');
-    const tamperedToken = `${payloadB64}.${tamperedSig}`;
+    const [payloadB64] = token.split('.');
+    // Replace signature with a completely different fixed string (wrong HMAC)
+    const tamperedToken = `${payloadB64}.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`;
 
     const result = verifyIntentToken(tamperedToken);
     expect(result.valid).toBe(false);
