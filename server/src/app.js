@@ -8,6 +8,8 @@ import { config } from './config.js';
 import { bankRouter } from './routes/bank.js';
 import { executeRouter } from './routes/execute.js';
 import { analyzeRouter } from './routes/analyze.js';
+import { authRouter } from './routes/auth.js';
+import { sessionMiddleware } from './middleware/session.js';
 import { getLlmStatus } from './lib/gemini.js';
 
 export function createApp() {
@@ -41,6 +43,9 @@ export function createApp() {
   // 5. Cookie parser with SERVER_SECRET
   app.use(cookieParser(config.serverSecret));
 
+  // Session middleware
+  app.use(sessionMiddleware);
+
   // 6. Rate limiting on /api (300 req/min per IP, JSON error body)
   const apiLimiter = rateLimit({
     windowMs: 60 * 1000,
@@ -71,6 +76,9 @@ export function createApp() {
 
   // Execute route
   app.use('/api', executeRouter);
+
+  // Auth routes
+  app.use('/api/auth', authRouter);
 
 
   // 404 handler for unmatched routes

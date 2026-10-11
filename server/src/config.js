@@ -8,6 +8,8 @@ export const config = {
   serverSecret: process.env.SERVER_SECRET || 'dev-secret-change-me',
   SERVER_SECRET: process.env.SERVER_SECRET || 'dev-secret-change-me',
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   clientOrigin: process.env.CLIENT_ORIGIN || '',
-  isDev: (process.env.NODE_ENV || 'development') === 'development'
+  get isDev() { return (process.env.NODE_ENV || 'development') === 'development'; },
+  get isProd() { return process.env.NODE_ENV === 'production'; }
 };

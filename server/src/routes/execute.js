@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { verifyIntentToken, consumeNonce } from '../lib/token.js';
 import * as mockBank from '../lib/mockBank.js';
+import { getUserId } from '../middleware/session.js';
 
 export const executeRouter = Router();
 
@@ -47,7 +48,7 @@ executeRouter.post(['/execute', '/'], (req, res) => {
 
   // 4. Call mockBank.transfer using ONLY values inside the token (never from req.body)
   try {
-    const userId = payload.uid || 'usr_demo';
+    const userId = payload.uid || getUserId(req);
     const receipt = mockBank.transfer(userId, {
       recipient_id: payload.rid,
       amount_paise: payload.amt,

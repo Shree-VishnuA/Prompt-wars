@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { runPipeline } from '../lib/pipeline.js';
 import { makeBlockedVerdict } from '../lib/schemas.js';
 import { recordAudit, getAuditLog } from '../lib/audit.js';
+import { getUserId } from '../middleware/session.js';
 import crypto from 'node:crypto';
 
 export const analyzeRouter = Router();
@@ -49,7 +50,7 @@ analyzeRouter.post('/analyze', async (req, res) => {
   const verdict = await runPipeline({
     instruction,
     memo,
-    userId: req.user?.id || 'usr_demo',
+    userId: getUserId(req),
     options: { useLlm: true }
   });
 
