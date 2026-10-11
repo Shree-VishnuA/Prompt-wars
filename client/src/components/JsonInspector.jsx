@@ -35,7 +35,7 @@ export function tokenizeLine(line, lineIdx) {
   while ((match = tokenRegex.exec(content)) !== null) {
     if (match.index > lastIndex) {
       spans.push(
-        <span key={`raw-${lineIdx}-${tokenIdx++}`} className="text-slate-800">
+        <span key={`raw-${lineIdx}-${tokenIdx++}`} className="text-slate-800 dark:text-slate-200">
           {content.slice(lastIndex, match.index)}
         </span>
       );
@@ -45,37 +45,37 @@ export function tokenizeLine(line, lineIdx) {
 
     if (key) {
       spans.push(
-        <span key={`key-${lineIdx}-${tokenIdx++}`} className="text-slate-900 font-semibold">
+        <span key={`key-${lineIdx}-${tokenIdx++}`} className="text-slate-900 dark:text-sky-300 font-semibold">
           {key}
         </span>
       );
     } else if (str) {
       spans.push(
-        <span key={`str-${lineIdx}-${tokenIdx++}`} className="text-emerald-700">
+        <span key={`str-${lineIdx}-${tokenIdx++}`} className="text-emerald-700 dark:text-emerald-400">
           {str}
         </span>
       );
     } else if (num) {
       spans.push(
-        <span key={`num-${lineIdx}-${tokenIdx++}`} className="text-blue-700">
+        <span key={`num-${lineIdx}-${tokenIdx++}`} className="text-blue-700 dark:text-amber-400 font-medium">
           {num}
         </span>
       );
     } else if (bool) {
       spans.push(
-        <span key={`bool-${lineIdx}-${tokenIdx++}`} className="text-purple-700 font-semibold">
+        <span key={`bool-${lineIdx}-${tokenIdx++}`} className="text-purple-700 dark:text-purple-400 font-semibold">
           {bool}
         </span>
       );
     } else if (nil) {
       spans.push(
-        <span key={`nil-${lineIdx}-${tokenIdx++}`} className="text-slate-400 italic">
+        <span key={`nil-${lineIdx}-${tokenIdx++}`} className="text-slate-500 dark:text-slate-400 italic">
           {nil}
         </span>
       );
     } else if (punc) {
       spans.push(
-        <span key={`punc-${lineIdx}-${tokenIdx++}`} className="text-slate-500 font-mono">
+        <span key={`punc-${lineIdx}-${tokenIdx++}`} className="text-slate-600 dark:text-slate-400 font-mono">
           {punc}
         </span>
       );
@@ -92,7 +92,7 @@ export function tokenizeLine(line, lineIdx) {
 
   if (lastIndex < content.length) {
     spans.push(
-      <span key={`tail-${lineIdx}-${tokenIdx++}`} className="text-slate-800">
+      <span key={`tail-${lineIdx}-${tokenIdx++}`} className="text-slate-800 dark:text-slate-200">
         {content.slice(lastIndex)}
       </span>
     );
@@ -113,12 +113,12 @@ export default function JsonInspector({ verdict: propVerdict } = {}) {
     return (
       <div
         data-testid="json-inspector"
-        className="rounded-lg border border-slate-200 bg-white p-6 text-center"
+        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center shadow-xs"
       >
-        <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">
+        <div className="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
           JSON Verdict Inspector
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           No verdict generated yet. Evaluated payloads and server verdict tokens will render here.
         </p>
       </div>
@@ -230,15 +230,15 @@ export default function JsonInspector({ verdict: propVerdict } = {}) {
 
       {/* Collapsible Body */}
       {!isCollapsed && (
-        <div className="rounded-lg bg-slate-950 dark:bg-slate-950/90 border border-slate-800/80 p-3 overflow-x-auto max-h-[460px] overflow-y-auto font-mono text-[11px] leading-5 text-slate-200">
+        <div className="rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 overflow-x-auto max-h-[460px] overflow-y-auto font-mono text-[11px] leading-5 text-slate-800 dark:text-slate-200">
           <table className="w-full border-collapse">
             <tbody>
               {lines.map((line, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/60">
-                  <td className="w-8 select-none pr-3 text-right text-[10px] text-slate-500 border-r border-slate-800 align-top">
+                <tr key={idx} className="hover:bg-slate-200/50 dark:hover:bg-slate-900/60 transition-colors">
+                  <td className="w-8 select-none pr-3 text-right text-[10px] text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 align-top">
                     {idx + 1}
                   </td>
-                  <td className="pl-3 whitespace-pre text-slate-200 align-top">
+                  <td className="pl-3 whitespace-pre text-slate-800 dark:text-slate-200 align-top">
                     {tokenizeLine(line, idx)}
                   </td>
                 </tr>
