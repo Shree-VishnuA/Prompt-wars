@@ -4,6 +4,8 @@ import RequestForm from './RequestForm.jsx';
 import VerdictPanel from './VerdictPanel.jsx';
 import TraceTimeline from './TraceTimeline.jsx';
 import JsonInspector from './JsonInspector.jsx';
+import AccountCard from './AccountCard.jsx';
+import ConfirmTransfer from './ConfirmTransfer.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -40,52 +42,21 @@ function StatusPill({ health }) {
 
 function FirewallPlaceholder() {
   return (
-    <div className="space-y-6">
-      <RequestForm />
-      <VerdictPanel />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <TraceTimeline />
-        <JsonInspector />
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Main Firewall Column */}
+      <div className="lg:col-span-8 space-y-6">
+        <RequestForm />
+        <VerdictPanel />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <TraceTimeline />
+          <JsonInspector />
+        </div>
       </div>
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-sm">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
-              Layer 1-7 Defensive Pipeline
-            </div>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-100">
-              Transaction Intent Firewall
-            </h2>
-            <p className="mt-1 text-sm text-slate-400 max-w-2xl">
-              Inspect natural language instructions and transaction memos for prompt injections,
-              roleplay jailbreaks, obfuscation, and amount tampering before granting execution tokens.
-            </p>
-          </div>
-          <div className="hidden sm:block text-right">
-            <span className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              Real-time Active
-            </span>
-          </div>
-        </div>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-lg bg-slate-950/60 p-4 border border-slate-800/80">
-            <div className="text-xs font-mono text-slate-400">DETERMINISTIC DEFENSE</div>
-            <div className="mt-2 text-lg font-semibold text-slate-200">Regex & Entropy Engine</div>
-            <p className="mt-1 text-xs text-slate-400">Zero-width, base64, homoglyph, delimiter filters</p>
-          </div>
-          <div className="rounded-lg bg-slate-950/60 p-4 border border-slate-800/80">
-            <div className="text-xs font-mono text-slate-400">SEMANTIC PARSER</div>
-            <div className="mt-2 text-lg font-semibold text-slate-200">Grammar & Grounding</div>
-            <p className="mt-1 text-xs text-slate-400">Strict recipient verification & memo conflict guards</p>
-          </div>
-          <div className="rounded-lg bg-slate-950/60 p-4 border border-slate-800/80">
-            <div className="text-xs font-mono text-slate-400">LLM REASONING</div>
-            <div className="mt-2 text-lg font-semibold text-slate-200">Dual-Model Validator</div>
-            <p className="mt-1 text-xs text-slate-400">Isolated extractor and adversarial judge evaluation</p>
-          </div>
-        </div>
+      {/* Firewall Sidebar */}
+      <div className="lg:col-span-4 space-y-6">
+        <ConfirmTransfer />
+        <AccountCard />
       </div>
     </div>
   );

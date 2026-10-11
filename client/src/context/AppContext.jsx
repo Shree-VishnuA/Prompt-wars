@@ -79,15 +79,19 @@ export function appReducer(state, action) {
       if (!newVerdict) {
         return { ...state, verdict: null };
       }
+      const timedVerdict = {
+        ...newVerdict,
+        timestamp: newVerdict.timestamp || Date.now()
+      };
       // Prepend verdict into history, keeping the last 20 entries
       const updatedHistory = [
-        newVerdict,
-        ...state.history.filter((h) => h.request_id !== newVerdict.request_id)
+        timedVerdict,
+        ...state.history.filter((h) => h.request_id !== timedVerdict.request_id)
       ].slice(0, 20);
 
       return {
         ...state,
-        verdict: newVerdict,
+        verdict: timedVerdict,
         history: updatedHistory
       };
     }
@@ -168,6 +172,15 @@ export function AppProvider({ children, initialValue = {} }) {
     };
   }, []);
 
+  const refreshAccount = useCallback(async () => {
+    const res = await api.getAccount();
+    if (res.ok && res.data) {
+      dispatch({ type: ACTIONS.SET_ACCOUNT, payload: res.data });
+      return res.data;
+    }
+    return null;
+  }, []);
+
   const value = {
     state,
     dispatch,
@@ -179,6 +192,7 @@ export function AppProvider({ children, initialValue = {} }) {
     error: state.error,
     history: state.history,
     activeTab: state.activeTab,
+    refreshAccount,
     setUser: (u) => dispatch({ type: ACTIONS.SET_USER, payload: u }),
     setHealth: (h) => dispatch({ type: ACTIONS.SET_HEALTH, payload: h }),
     setAccount: (a) => dispatch({ type: ACTIONS.SET_ACCOUNT, payload: a }),

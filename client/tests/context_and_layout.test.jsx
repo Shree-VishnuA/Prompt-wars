@@ -268,7 +268,7 @@ describe('Layout component', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Layer 1-7 Defensive Pipeline/i)).toBeInTheDocument();
+      expect(screen.getByText(/Natural Language Transaction Input/i)).toBeInTheDocument();
     });
 
     // Click "Replay Lab"
@@ -285,6 +285,6 @@ describe('Layout component', () => {
 
     // Click back to "Firewall"
     fireEvent.click(screen.getByRole('button', { name: 'Firewall' }));
-    expect(screen.getByText(/Layer 1-7 Defensive Pipeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/Natural Language Transaction Input/i)).toBeInTheDocument();
   });
 });
