@@ -16,6 +16,9 @@ import { getLlmStatus } from './lib/gemini.js';
 export function createApp() {
   const app = express();
 
+  // Trust proxy for reverse proxies (Render, Heroku, Cloudflare)
+  app.set('trust proxy', 1);
+
   // 1. Request ID middleware (crypto.randomUUID, set req.id and header)
   app.use((req, res, next) => {
     req.id = crypto.randomUUID();
@@ -27,9 +30,16 @@ export function createApp() {
   app.use(helmet());
 
   // 3. CORS (origin from CLIENT_ORIGIN or true in dev, credentials true)
-  const corsOrigin = config.isDev
-    ? (config.clientOrigin || true)
-    : (config.clientOrigin || false);
+  let corsOrigin;
+  if (config.isDev) {
+    corsOrigin = config.clientOrigin || true;
+  } else if (config.clientOrigin) {
+    corsOrigin = config.clientOrigin.includes(',')
+      ? config.clientOrigin.split(',').map((o) => o.trim())
+      : config.clientOrigin;
+  } else {
+    corsOrigin = true;
+  }
 
   app.use(
     cors({

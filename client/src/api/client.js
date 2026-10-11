@@ -1,5 +1,10 @@
 const TIMEOUT_MS = 15000;
 
+const API_BASE =
+  typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+    : '';
+
 async function request(url, options = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -15,7 +20,8 @@ async function request(url, options = {}) {
       body = JSON.stringify(body);
     }
 
-    const res = await fetch(url, {
+    const targetUrl = url.startsWith('http') ? url : `${API_BASE}${url}`;
+    const res = await fetch(targetUrl, {
       ...options,
       headers,
       body,

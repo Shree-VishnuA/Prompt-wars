@@ -4,10 +4,11 @@ export const COOKIE_NAME = 'bk_sid';
 
 export function getCookieOptions() {
   const isProd = process.env.NODE_ENV === 'production';
+  const sameSite = process.env.COOKIE_SAME_SITE || (isProd ? 'none' : 'lax');
   return {
     httpOnly: true,
     signed: true,
-    sameSite: 'lax',
+    sameSite,
     secure: isProd,
     maxAge: 6 * 60 * 60 * 1000, // 6 hours
     path: '/'
@@ -16,10 +17,11 @@ export function getCookieOptions() {
 
 export function getClearCookieOptions() {
   const isProd = process.env.NODE_ENV === 'production';
+  const sameSite = process.env.COOKIE_SAME_SITE || (isProd ? 'none' : 'lax');
   return {
     httpOnly: true,
     signed: true,
-    sameSite: 'lax',
+    sameSite,
     secure: isProd,
     path: '/'
   };

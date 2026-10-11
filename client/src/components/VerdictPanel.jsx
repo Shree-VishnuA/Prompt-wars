@@ -5,45 +5,45 @@ import { formatPaise, getThreatCategoryLabel } from '../lib/format.js';
 function RiskBadge({ score = 0, level = 'LOW' }) {
   const safeScore = Math.max(0, Math.min(100, Number(score) || 0));
 
-  let barColor = 'bg-emerald-500';
-  let badgeColor = 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30';
+  let barColor = 'bg-emerald-600';
+  let badgeColor = 'bg-emerald-50 text-emerald-800 border-emerald-200';
 
   if (safeScore >= 80 || level === 'CRITICAL') {
-    barColor = 'bg-rose-500';
-    badgeColor = 'bg-rose-950/40 text-rose-300 border-rose-500/30';
+    barColor = 'bg-rose-600';
+    badgeColor = 'bg-rose-50 text-rose-800 border-rose-200';
   } else if (safeScore >= 50 || level === 'HIGH') {
     barColor = 'bg-orange-500';
-    badgeColor = 'bg-orange-950/40 text-orange-300 border-orange-500/30';
+    badgeColor = 'bg-orange-50 text-orange-800 border-orange-200';
   } else if (safeScore >= 25 || level === 'MEDIUM') {
     barColor = 'bg-amber-500';
-    badgeColor = 'bg-amber-950/40 text-amber-300 border-amber-500/30';
+    badgeColor = 'bg-amber-50 text-amber-800 border-amber-200';
   }
 
   return (
     <div
       data-testid="verdict-risk"
-      className="rounded-lg bg-slate-950/80 border border-slate-800 p-3.5 flex flex-col justify-between"
+      className="rounded-md bg-slate-50 border border-slate-200 p-3.5 flex flex-col justify-between"
     >
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+        <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
           Risk Assessment
         </span>
         <span
-          className={`text-xs font-mono font-semibold px-2 py-0.5 rounded border ${badgeColor}`}
+          className={`text-xs font-mono font-medium px-2 py-0.5 rounded border ${badgeColor}`}
         >
           {String(level || 'LOW').toUpperCase()} ({safeScore}/100)
         </span>
       </div>
 
       {/* 0-100 Gauge Bar */}
-      <div className="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+      <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+          className={`h-full rounded-full transition-all duration-300 ${barColor}`}
           style={{ width: `${safeScore}%` }}
         />
       </div>
 
-      <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-1.5">
+      <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1.5">
         <span>0 (Safe)</span>
         <span>25</span>
         <span>50</span>
@@ -60,11 +60,11 @@ function SimulatedResultView({ result }) {
   // Case 1: Balance inquiry read result
   if (result.balance_paise !== undefined && result.balance_paise !== null) {
     return (
-      <div className="mt-4 rounded-lg bg-slate-950 border border-slate-800 p-4">
-        <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">
+      <div className="mt-4 rounded-md bg-slate-50 border border-slate-200 p-4">
+        <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-1">
           Account Balance Result
         </div>
-        <div className="text-2xl font-bold font-mono text-emerald-400">
+        <div className="text-2xl font-bold font-mono text-slate-900">
           {formatPaise(result.balance_paise)}
         </div>
         <p className="text-xs text-slate-500 mt-1">
@@ -77,9 +77,9 @@ function SimulatedResultView({ result }) {
   // Case 2: Transaction history read result
   if (Array.isArray(result.transactions)) {
     return (
-      <div className="mt-4 rounded-lg bg-slate-950 border border-slate-800 p-4">
+      <div className="mt-4 rounded-md bg-slate-50 border border-slate-200 p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <div className="text-xs font-mono text-slate-500 uppercase tracking-wider">
             Simulated Ledger Transactions ({result.transactions.length})
           </div>
         </div>
@@ -90,7 +90,7 @@ function SimulatedResultView({ result }) {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 font-mono">
+                <tr className="border-b border-slate-200 text-slate-500 font-mono">
                   <th className="pb-2 font-medium">Date</th>
                   <th className="pb-2 font-medium">Counterparty</th>
                   <th className="pb-2 font-medium">Type</th>
@@ -98,37 +98,37 @@ function SimulatedResultView({ result }) {
                   <th className="pb-2 font-medium pl-4">Memo</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-900 font-mono">
+              <tbody className="divide-y divide-slate-200 font-mono">
                 {result.transactions.map((tx, idx) => {
                   const isCredit = tx.type === 'CREDIT';
                   return (
-                    <tr key={tx.id || idx} className="hover:bg-slate-900/50">
-                      <td className="py-2 text-slate-400 whitespace-nowrap">
+                    <tr key={tx.id || idx} className="hover:bg-slate-100/50">
+                      <td className="py-2 text-slate-600 whitespace-nowrap">
                         {tx.date ? new Date(tx.date).toLocaleDateString('en-IN') : '—'}
                       </td>
-                      <td className="py-2 text-slate-200 font-sans font-medium whitespace-nowrap">
+                      <td className="py-2 text-slate-900 font-sans font-medium whitespace-nowrap">
                         {tx.counterparty || 'Unknown'}
                       </td>
                       <td className="py-2">
                         <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] ${
+                          className={`px-1.5 py-0.5 rounded text-[10px] border ${
                             isCredit
-                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900'
-                              : 'bg-slate-800 text-slate-300 border border-slate-700'
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : 'bg-slate-100 text-slate-700 border-slate-200'
                           }`}
                         >
                           {tx.type}
                         </span>
                       </td>
                       <td
-                        className={`py-2 text-right font-semibold whitespace-nowrap ${
-                          isCredit ? 'text-emerald-400' : 'text-slate-200'
+                        className={`py-2 text-right font-medium whitespace-nowrap ${
+                          isCredit ? 'text-emerald-700' : 'text-slate-900'
                         }`}
                       >
                         {isCredit ? '+' : '-'}
                         {formatPaise(tx.amount_paise)}
                       </td>
-                      <td className="py-2 pl-4 text-slate-400 truncate max-w-xs font-sans">
+                      <td className="py-2 pl-4 text-slate-600 truncate max-w-xs font-sans">
                         {tx.memo || '—'}
                       </td>
                     </tr>
@@ -144,11 +144,11 @@ function SimulatedResultView({ result }) {
 
   // Fallback generic object display
   return (
-    <div className="mt-4 rounded-lg bg-slate-950 border border-slate-800 p-4">
-      <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
+    <div className="mt-4 rounded-md bg-slate-50 border border-slate-200 p-4">
+      <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">
         Simulated Read Output
       </div>
-      <pre className="text-xs font-mono text-slate-300 overflow-x-auto p-2 bg-slate-900 rounded">
+      <pre className="text-xs font-mono text-slate-800 overflow-x-auto p-2 bg-white rounded border border-slate-200">
         {JSON.stringify(result, null, 2)}
       </pre>
     </div>
@@ -162,10 +162,10 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
   // Empty State when no verdict has been evaluated yet
   if (!verdict) {
     return (
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-8 shadow-xl backdrop-blur-sm text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-slate-400 mb-3 shadow-inner">
+      <div className="rounded-lg border border-slate-200 bg-white p-8 text-center">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-slate-50 border border-slate-200 text-slate-400 mb-3">
           <svg
-            className="w-6 h-6"
+            className="w-5 h-5"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
@@ -178,10 +178,10 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
             />
           </svg>
         </div>
-        <h3 className="text-base font-semibold text-slate-200">
+        <h3 className="text-base font-semibold text-slate-900">
           Awaiting Transaction Input
         </h3>
-        <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+        <p className="text-sm text-slate-500 max-w-md mx-auto mt-1">
           Submit an instruction or pick a sample from above to evaluate the request
           through our 7-layer defense firewall.
         </p>
@@ -199,22 +199,22 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm space-y-5"
+      className="rounded-lg border border-slate-200 bg-white p-6 space-y-5"
     >
       {/* Top Bar: Decision Banner & Metadata */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Large Decision Banner */}
         <div
           data-testid="verdict-decision"
-          className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-xl border text-lg font-bold font-mono tracking-wide shadow-md transition-colors ${
+          className={`inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-md border text-sm font-semibold font-mono tracking-wide ${
             isApproved
-              ? 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40 shadow-emerald-950/40'
-              : 'bg-rose-950/50 text-rose-300 border-rose-500/40 shadow-rose-950/40'
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              : 'bg-rose-50 text-rose-800 border-rose-200'
           }`}
         >
           {isApproved ? (
             <svg
-              className="w-6 h-6 text-emerald-400 shrink-0"
+              className="w-4 h-4 text-emerald-700 shrink-0"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
@@ -224,7 +224,7 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
             </svg>
           ) : (
             <svg
-              className="w-6 h-6 text-rose-400 shrink-0"
+              className="w-4 h-4 text-rose-700 shrink-0"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
@@ -238,18 +238,18 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
 
         {/* Threat Category Chip */}
         <div className="flex items-center flex-wrap gap-2">
-          <span className="text-xs text-slate-400 font-mono">CATEGORY:</span>
+          <span className="text-xs text-slate-500 font-mono">CATEGORY:</span>
           <div
             data-testid="verdict-category"
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold font-mono border ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium font-mono border ${
               isApproved
-                ? 'bg-emerald-950/30 text-emerald-300 border-emerald-800/40'
-                : 'bg-rose-950/30 text-rose-300 border-rose-800/40'
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                : 'bg-rose-50 text-rose-800 border-rose-200'
             }`}
           >
             <span
-              className={`w-2 h-2 rounded-full ${
-                isApproved ? 'bg-emerald-400' : 'bg-rose-400'
+              className={`w-1.5 h-1.5 rounded-full ${
+                isApproved ? 'bg-emerald-600' : 'bg-rose-600'
               }`}
             />
             <span>{categoryLabel}</span>
@@ -263,34 +263,34 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
         <RiskBadge score={verdict.risk_score ?? 0} level={verdict.risk_level || 'LOW'} />
 
         {/* Request Execution Meta */}
-        <div className="rounded-lg bg-slate-950/80 border border-slate-800 p-3.5 flex flex-col justify-between text-xs font-mono">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-            <span className="text-slate-400">REQUEST ID</span>
-            <span className="text-slate-200 truncate max-w-[180px]">
+        <div className="rounded-md bg-slate-50 border border-slate-200 p-3.5 flex flex-col justify-between text-xs font-mono">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+            <span className="text-slate-500">REQUEST ID</span>
+            <span className="text-slate-800 truncate max-w-[180px]">
               {verdict.request_id || '—'}
             </span>
           </div>
-          <div className="flex items-center justify-between py-1.5 border-b border-slate-800/80">
-            <span className="text-slate-400">LATENCY</span>
-            <span className="text-slate-200">
+          <div className="flex items-center justify-between py-1.5 border-b border-slate-200">
+            <span className="text-slate-500">LATENCY</span>
+            <span className="text-slate-800">
               {verdict.latency_ms !== undefined ? `${verdict.latency_ms} ms` : '—'}
             </span>
           </div>
           <div className="flex items-center justify-between pt-2">
-            <span className="text-slate-400">POLICY VERSION</span>
-            <span className="text-slate-200">v{verdict.policy_version || '1.0.0'}</span>
+            <span className="text-slate-500">POLICY VERSION</span>
+            <span className="text-slate-800">v{verdict.policy_version || '1.0.0'}</span>
           </div>
         </div>
       </div>
 
       {/* Rationale Text (Plain React Text, never dangerouslySetInnerHTML) */}
-      <div className="rounded-lg bg-slate-950/70 border border-slate-800/80 p-4">
-        <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+      <div className="rounded-md bg-slate-50 border border-slate-200 p-4">
+        <div className="text-xs font-mono text-slate-500 uppercase tracking-wider mb-1.5">
           Policy Rationale
         </div>
         <p
           data-testid="verdict-rationale"
-          className="text-sm text-slate-200 leading-relaxed font-sans"
+          className="text-sm text-slate-800 leading-relaxed font-sans"
         >
           {truncatedRationale}
         </p>
@@ -298,9 +298,9 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
 
       {/* Degraded Warning if verdict.degraded */}
       {verdict.degraded && (
-        <div className="rounded-lg bg-amber-950/30 border border-amber-500/40 p-3.5 flex items-start gap-3 text-amber-200 text-xs">
+        <div className="rounded-md bg-amber-50 border border-amber-200 p-3.5 flex items-start gap-3 text-amber-900 text-xs">
           <svg
-            className="w-5 h-5 text-amber-400 shrink-0 mt-0.5"
+            className="w-4 h-4 text-amber-700 shrink-0 mt-0.5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -324,9 +324,9 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
 
       {/* requires_confirmation Notice */}
       {verdict.requires_confirmation && (
-        <div className="rounded-lg bg-emerald-950/30 border border-emerald-500/40 p-3.5 flex items-start gap-3 text-emerald-200 text-xs">
+        <div className="rounded-md bg-slate-50 border border-slate-200 p-3.5 flex items-start gap-3 text-slate-800 text-xs">
           <svg
-            className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5"
+            className="w-4 h-4 text-slate-700 shrink-0 mt-0.5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -340,7 +340,7 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
           </svg>
           <div>
             <span className="font-semibold block mb-0.5">Explicit Confirmation Required</span>
-            <span>
+            <span className="text-slate-600">
               An authorized intent token was minted for this transfer. Review the recipient
               and amount before triggering irreversible fund execution.
             </span>

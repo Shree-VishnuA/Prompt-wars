@@ -21,18 +21,18 @@ export default function AccountCard() {
   const recentTransactions = (account?.history || []).slice(0, 5);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 shadow-xl backdrop-blur-sm space-y-4">
+    <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
       {/* Account Header */}
-      <div className="flex items-start justify-between border-b border-slate-800/80 pb-3">
+      <div className="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <h3 className="text-sm font-semibold text-slate-100 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <h3 className="text-sm font-semibold text-slate-900 font-sans">
               {userName}
             </h3>
           </div>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            ID: <span className="text-slate-300">{accountId}</span>
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
+            ID: <span className="text-slate-700">{accountId}</span>
           </p>
         </div>
 
@@ -42,10 +42,10 @@ export default function AccountCard() {
           disabled={refreshing}
           aria-label="Refresh account ledger balance and transactions"
           title="Refresh account data"
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700"
+          className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-transparent"
         >
           <svg
-            className={`w-4 h-4 ${refreshing ? 'animate-spin text-emerald-400' : ''}`}
+            className={`w-4 h-4 ${refreshing ? 'animate-spin text-slate-900' : ''}`}
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -61,11 +61,11 @@ export default function AccountCard() {
       </div>
 
       {/* Balance Display */}
-      <div className="rounded-lg bg-slate-950/80 border border-slate-800/80 p-3.5">
-        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+      <div className="rounded-md bg-slate-50 border border-slate-200 p-3.5">
+        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-1">
           Available Ledger Balance
         </span>
-        <div className="text-2xl font-bold font-mono text-emerald-400">
+        <div className="text-2xl font-bold font-mono text-slate-900">
           {formatPaise(balancePaise)}
         </div>
       </div>
@@ -73,37 +73,37 @@ export default function AccountCard() {
       {/* Up to 5 Recent Transactions */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
             Recent Activity ({recentTransactions.length})
           </span>
           <span className="text-[10px] text-slate-400 font-mono">Last 5</span>
         </div>
 
         {recentTransactions.length === 0 ? (
-          <div className="rounded-lg bg-slate-950/50 border border-slate-800/60 p-3 text-center text-xs text-slate-400 font-mono">
+          <div className="rounded-md bg-slate-50 border border-slate-200 p-3 text-center text-xs text-slate-500 font-mono">
             No transactions yet.
           </div>
         ) : (
-          <div className="divide-y divide-slate-800/60 rounded-lg bg-slate-950/60 border border-slate-800/80 overflow-hidden">
+          <div className="divide-y divide-slate-100 rounded-md bg-white border border-slate-200 overflow-hidden">
             {recentTransactions.map((tx, idx) => {
               const isCredit = tx.type === 'CREDIT';
               return (
                 <div
                   key={tx.id || idx}
-                  className="p-2.5 flex items-center justify-between text-xs hover:bg-slate-900/50 transition-colors"
+                  className="p-2.5 flex items-center justify-between text-xs hover:bg-slate-50 transition-colors"
                 >
                   <div className="min-w-0 pr-2">
-                    <p className="text-slate-200 font-medium truncate">
+                    <p className="text-slate-900 font-medium truncate">
                       {tx.counterparty || 'Counterparty'}
                     </p>
-                    <p className="text-[10px] text-slate-400 truncate font-mono">
+                    <p className="text-[10px] text-slate-500 truncate font-mono">
                       {tx.memo || (tx.date ? new Date(tx.date).toLocaleDateString('en-IN') : '')}
                     </p>
                   </div>
                   <div className="text-right shrink-0 font-mono">
                     <span
                       className={`font-semibold block ${
-                        isCredit ? 'text-emerald-400' : 'text-slate-200'
+                        isCredit ? 'text-emerald-700' : 'text-slate-900'
                       }`}
                     >
                       {isCredit ? '+' : '-'}

@@ -113,20 +113,20 @@ export default function AuthButton() {
   // Case 1: Signed-in with Google
   if (isGoogleUser) {
     return (
-      <div className="flex items-center gap-2.5 bg-slate-900/80 border border-slate-800 rounded-full py-1 pl-1.5 pr-3 shadow-sm">
+      <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-md py-1 pl-1.5 pr-2.5">
         {user.picture ? (
           <img
             src={user.picture}
             alt={user.name || 'User avatar'}
-            className="w-5 h-5 rounded-full border border-slate-700 object-cover shrink-0"
+            className="w-5 h-5 rounded-full border border-slate-200 object-cover shrink-0"
           />
         ) : (
-          <div className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 flex items-center justify-center text-[10px] font-bold uppercase shrink-0">
+          <div className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center text-[10px] font-bold uppercase shrink-0">
             {(user.name || user.email || 'G')[0]}
           </div>
         )}
 
-        <span className="text-xs text-slate-200 font-medium truncate max-w-[120px]">
+        <span className="text-xs text-slate-800 font-medium truncate max-w-[120px]">
           {user.name || user.email || 'Google User'}
         </span>
 
@@ -135,7 +135,7 @@ export default function AuthButton() {
           onClick={handleSignOut}
           disabled={signingOut}
           aria-label="Sign out of Google session"
-          className="text-[11px] font-mono text-slate-400 hover:text-rose-300 transition-colors ml-1 border-l border-slate-800 pl-2"
+          className="text-xs font-mono text-slate-500 hover:text-slate-900 transition-colors ml-1 border-l border-slate-200 pl-2"
         >
           {signingOut ? 'Signing out...' : 'Sign out'}
         </button>
@@ -148,7 +148,7 @@ export default function AuthButton() {
     return (
       <div
         data-testid="guest-badge"
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-slate-900/80 border border-slate-800 text-slate-300 shadow-sm"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono bg-slate-50 border border-slate-200 text-slate-700 whitespace-nowrap"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
         <span>Guest session</span>

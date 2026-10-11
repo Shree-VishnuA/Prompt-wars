@@ -4,22 +4,23 @@ import * as api from '../api/client.js';
 import { GROUP_LABELS } from './ReplayLab.jsx';
 
 export default function BenchmarkPage() {
-  const { setActiveTab, setDraftInput } = useApp();
+  const { setDraftInput, setActiveTab } = useApp();
 
   const [mode, setMode] = useState('deterministic');
   const [running, setRunning] = useState(false);
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [is429, setIs429] = useState(false);
-  const [allCases, setAllCases] = useState(null);
 
-  // Lazy-load cases to support opening failures in Replay Lab
+  // Cached lab cases for linking failure cases
+  const [cachedCases, setCachedCases] = useState(null);
+
   const ensureCasesLoaded = async () => {
-    if (allCases) return allCases;
+    if (cachedCases) return cachedCases;
     try {
       const res = await api.labCases();
       if (res.ok && Array.isArray(res.data)) {
-        setAllCases(res.data);
+        setCachedCases(res.data);
         return res.data;
       }
     } catch {
@@ -32,11 +33,9 @@ export default function BenchmarkPage() {
     setRunning(true);
     setErrorMsg(null);
     setIs429(false);
+    setBenchmarkData(null);
 
     try {
-      // Also prefetch cases in parallel
-      ensureCasesLoaded();
-
       const res = await api.labBenchmark(mode);
 
       if (res.ok && res.data) {
@@ -74,16 +73,16 @@ export default function BenchmarkPage() {
   return (
     <div className="space-y-6">
       {/* Top Controls Header */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-800 gap-3">
+      <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-md bg-purple-500/10 px-2.5 py-1 text-xs font-mono font-medium text-purple-400 border border-purple-500/20 mb-2">
+            <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 border border-slate-200 mb-2">
               Regression Harness • 60 Curated Cases
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-100 font-mono">
+            <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
               Defense Benchmark Harness
             </h2>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+            <p className="text-xs text-slate-500 mt-1 max-w-2xl">
               Evaluate real-world security accuracy across 20 benign scenarios and 40 attack vectors
               including prompt injections, jailbreaks, and obfuscation.
             </p>
@@ -94,43 +93,40 @@ export default function BenchmarkPage() {
             type="button"
             onClick={handleRunBenchmark}
             disabled={running}
-            className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-xs font-bold font-mono uppercase tracking-wider transition-all shadow-md shrink-0 ${
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md text-xs font-medium font-mono uppercase tracking-wider transition-colors shrink-0 ${
               running
-                ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-950/50'
+                ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                : 'bg-slate-900 hover:bg-slate-800 text-white'
             }`}
           >
             {running ? (
               <>
-                <svg className="animate-spin h-4 w-4 text-slate-950" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
                 <span>Evaluating 60 Cases...</span>
               </>
             ) : (
-              <>
-                <span>▶</span>
-                <span>Run benchmark</span>
-              </>
+              <span>Run benchmark</span>
             )}
           </button>
         </div>
 
         {/* Mode Toggle Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-          <div className="text-xs font-mono text-slate-300">
+          <div className="text-xs font-mono text-slate-600">
             Select Evaluation Mode:
           </div>
 
-          <div className="inline-flex p-1 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="inline-flex p-1 rounded-md bg-slate-100 border border-slate-200">
             <button
               type="button"
               onClick={() => setMode('deterministic')}
-              className={`px-4 py-2 rounded-lg text-xs font-mono font-medium transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-mono font-medium transition-colors ${
                 mode === 'deterministic'
-                  ? 'bg-slate-800 text-emerald-400 shadow-sm border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-400 font-semibold border border-slate-200 shadow-none'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>Deterministic fast</span>
@@ -142,10 +138,10 @@ export default function BenchmarkPage() {
             <button
               type="button"
               onClick={() => setMode('full')}
-              className={`px-4 py-2 rounded-lg text-xs font-mono font-medium transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-mono font-medium transition-colors ${
                 mode === 'full'
-                  ? 'bg-slate-800 text-purple-400 shadow-sm border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-purple-400 font-semibold border border-slate-200 shadow-none'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>Full with AI</span>
@@ -159,15 +155,15 @@ export default function BenchmarkPage() {
         {/* Indeterminate Progress Bar while running */}
         {running && (
           <div className="pt-2 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-500">
               <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
                 Evaluating cases across all 11 threat categories...
               </span>
               <span>Running...</span>
             </div>
-            <div className="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
-              <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-purple-500 rounded-full animate-pulse w-full" />
+            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+              <div className="h-full bg-slate-900 rounded-full w-full" />
             </div>
           </div>
         )}
@@ -176,13 +172,13 @@ export default function BenchmarkPage() {
       {/* HTTP 429 and General Errors */}
       {errorMsg && (
         <div
-          className={`rounded-xl border p-4 text-xs font-mono flex items-start gap-3 shadow-lg ${
+          className={`rounded-md border p-4 text-xs font-mono flex items-start gap-3 ${
             is429
-              ? 'bg-amber-950/40 border-amber-500/50 text-amber-200'
-              : 'bg-rose-950/40 border-rose-500/50 text-rose-200'
+              ? 'bg-amber-50 border-amber-200 text-amber-900'
+              : 'bg-rose-50 border-rose-200 text-rose-900'
           }`}
         >
-          <span className="text-lg shrink-0">⚠️</span>
+          <span className="text-base shrink-0">⚠️</span>
           <div className="space-y-1">
             <p className="font-semibold text-sm">
               {is429 ? 'Rate Limit Exceeded (HTTP 429)' : 'Benchmark Error'}
@@ -194,16 +190,16 @@ export default function BenchmarkPage() {
 
       {/* Awaiting Benchmark Empty State */}
       {!running && !benchmarkData && !errorMsg && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-12 text-center shadow-xl backdrop-blur-sm">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-800 text-slate-400 border border-slate-700 mb-3 shadow-inner">
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <div className="rounded-lg border border-slate-200 bg-white p-12 text-center">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-slate-50 text-slate-400 border border-slate-200 mb-3">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
             </svg>
           </div>
-          <h3 className="text-base font-semibold text-slate-200">
+          <h3 className="text-base font-semibold text-slate-900">
             No Benchmark Results Yet
           </h3>
-          <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+          <p className="text-sm text-slate-500 max-w-md mx-auto mt-1">
             Select a mode above and click &quot;Run benchmark&quot; to inspect detection rates,
             false-positive metrics, category precision, and latency breakdowns.
           </p>
@@ -214,22 +210,22 @@ export default function BenchmarkPage() {
       {!running && benchmarkData && (
         <div
           data-testid="benchmark-scorecard"
-          className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm space-y-6"
+          className="rounded-lg border border-slate-200 bg-white p-6 space-y-6"
         >
           {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-800 gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <span>Evaluation Scorecard</span>
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                   {benchmarkData.mode} MODE
                 </span>
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Evaluated against all {benchmarkData.total} cases (20 benign, 40 hostile attacks).
               </p>
             </div>
-            <div className="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">
+            <div className="text-xs font-mono text-slate-600 bg-slate-50 px-2.5 py-1 rounded border border-slate-200">
               Total {benchmarkData.total} cases evaluated
             </div>
           </div>
@@ -237,11 +233,11 @@ export default function BenchmarkPage() {
           {/* 4 BIG NUMBER METRIC CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 1. Detection Rate */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex flex-col justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <div className="rounded-md bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
                 Detection Rate
               </span>
-              <div className="mt-2 text-3xl font-extrabold font-mono text-emerald-400">
+              <div className="mt-2 text-3xl font-bold font-mono text-slate-900">
                 {(benchmarkData.detection_rate * 100).toFixed(1)}%
               </div>
               <span className="text-[11px] text-slate-500 mt-1">
@@ -250,17 +246,17 @@ export default function BenchmarkPage() {
             </div>
 
             {/* 2. False-Positive Rate */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex flex-col justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <div className="rounded-md bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
                 False-Positive Rate
               </span>
               <div
-                className={`mt-2 text-3xl font-extrabold font-mono ${
+                className={`mt-2 text-3xl font-bold font-mono ${
                   benchmarkData.false_positive_rate === 0
-                    ? 'text-emerald-400'
+                    ? 'text-slate-900'
                     : benchmarkData.false_positive_rate <= 0.05
-                    ? 'text-amber-400'
-                    : 'text-rose-400'
+                    ? 'text-amber-700'
+                    : 'text-rose-700'
                 }`}
               >
                 {(benchmarkData.false_positive_rate * 100).toFixed(1)}%
@@ -271,11 +267,11 @@ export default function BenchmarkPage() {
             </div>
 
             {/* 3. Category Accuracy */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex flex-col justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <div className="rounded-md bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
                 Category Accuracy
               </span>
-              <div className="mt-2 text-3xl font-extrabold font-mono text-cyan-400">
+              <div className="mt-2 text-3xl font-bold font-mono text-slate-900">
                 {(benchmarkData.category_accuracy * 100).toFixed(1)}%
               </div>
               <span className="text-[11px] text-slate-500 mt-1">
@@ -284,11 +280,11 @@ export default function BenchmarkPage() {
             </div>
 
             {/* 4. Avg Latency */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex flex-col justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <div className="rounded-md bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
                 Avg Latency
               </span>
-              <div className="mt-2 text-3xl font-extrabold font-mono text-purple-400">
+              <div className="mt-2 text-3xl font-bold font-mono text-slate-900">
                 {benchmarkData.avg_latency_ms} ms
               </div>
               <span className="text-[11px] text-slate-500 mt-1">
@@ -298,8 +294,8 @@ export default function BenchmarkPage() {
           </div>
 
           {/* PER-GROUP BAR LIST */}
-          <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 space-y-3">
-            <h4 className="text-xs font-mono text-slate-300 uppercase tracking-wider">
+          <div className="rounded-md bg-slate-50 border border-slate-200 p-5 space-y-3">
+            <h4 className="text-xs font-mono text-slate-600 uppercase tracking-wider">
               Per-Group Defense Breakdown
             </h4>
 
@@ -313,20 +309,20 @@ export default function BenchmarkPage() {
                 return (
                   <div key={groupKey} className="space-y-1">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-slate-300">{groupLabel}</span>
-                      <span className="text-slate-400">
+                      <span className="text-slate-800">{groupLabel}</span>
+                      <span className="text-slate-500">
                         {passed} / {total} ({pct}%)
                       </span>
                     </div>
 
-                    <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                    <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${
+                        className={`h-full rounded-full transition-all duration-300 ${
                           pct === 100
-                            ? 'bg-emerald-500'
+                            ? 'bg-emerald-600'
                             : pct >= 80
                             ? 'bg-amber-500'
-                            : 'bg-rose-500'
+                            : 'bg-rose-600'
                         }`}
                         style={{ width: `${pct}%` }}
                       />
@@ -340,25 +336,25 @@ export default function BenchmarkPage() {
           {/* FAILURES TABLE */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-mono text-slate-300 uppercase tracking-wider">
+              <h4 className="text-xs font-mono text-slate-600 uppercase tracking-wider">
                 Case Failures ({benchmarkData.failures?.length || 0})
               </h4>
               {benchmarkData.failures?.length > 0 && (
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-[11px] text-slate-500 font-mono">
                   Click a row to load the case in Replay Lab
                 </span>
               )}
             </div>
 
             {(!benchmarkData.failures || benchmarkData.failures.length === 0) ? (
-              <div className="rounded-xl bg-emerald-950/20 border border-emerald-500/30 p-4 text-center text-xs font-mono text-emerald-300">
-                ✨ Zero Failures — All {benchmarkData.total} benchmark cases passed expected decision and category tests!
+              <div className="rounded-md bg-emerald-50 border border-emerald-200 p-4 text-center text-xs font-mono text-emerald-800">
+                Zero Failures — All {benchmarkData.total} benchmark cases passed expected decision and category tests.
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80">
+              <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-400 bg-slate-900/60">
+                    <tr className="border-b border-slate-200 text-slate-600 bg-slate-50">
                       <th className="py-2.5 px-3 font-semibold">Case ID</th>
                       <th className="py-2.5 px-3 font-semibold">Name</th>
                       <th className="py-2.5 px-3 font-semibold">Expected</th>
@@ -366,32 +362,32 @@ export default function BenchmarkPage() {
                       <th className="py-2.5 px-3 font-semibold text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-slate-100">
                     {benchmarkData.failures.map((f) => (
                       <tr
                         key={f.id}
                         onClick={() => handleOpenInReplayLab(f)}
-                        className="hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                        className="hover:bg-slate-50 transition-colors cursor-pointer group"
                       >
-                        <td className="py-2.5 px-3 text-slate-400 whitespace-nowrap">
+                        <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">
                           {f.id}
                         </td>
-                        <td className="py-2.5 px-3 text-slate-200 font-sans font-medium whitespace-nowrap">
+                        <td className="py-2.5 px-3 text-slate-900 font-sans font-medium whitespace-nowrap">
                           {f.name}
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className="text-emerald-400 font-semibold">
+                          <span className="text-emerald-700 font-semibold">
                             {f.expected.decision}
                           </span>
-                          <span className="text-slate-500 ml-1.5">
+                          <span className="text-slate-400 ml-1.5">
                             ({f.expected.category})
                           </span>
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className="text-rose-400 font-semibold">
+                          <span className="text-rose-700 font-semibold">
                             {f.actual.decision}
                           </span>
-                          <span className="text-slate-500 ml-1.5">
+                          <span className="text-slate-400 ml-1.5">
                             ({f.actual.category})
                           </span>
                         </td>
@@ -402,7 +398,7 @@ export default function BenchmarkPage() {
                               e.stopPropagation();
                               handleOpenInReplayLab(f);
                             }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800 transition-colors text-[11px]"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors text-[11px]"
                           >
                             <span>Open in Replay Lab</span>
                             <span>➔</span>

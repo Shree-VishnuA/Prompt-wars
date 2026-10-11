@@ -112,16 +112,16 @@ export default function RequestForm() {
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-800/80 gap-2">
+    <div className="rounded-lg border border-slate-200 bg-white p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 gap-2">
         <div>
-          <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
             <span>Natural Language Transaction Input</span>
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
               INTENT INTAKE
             </span>
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          </h2>
+          <p className="text-sm text-slate-600 mt-1">
             Enter banking instructions and optional payment memo to evaluate through the 7-layer defense pipeline.
           </p>
         </div>
@@ -129,8 +129,7 @@ export default function RequestForm() {
 
       {/* "Try a sample" chips section */}
       <div className="my-5">
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-400 mb-2.5">
-          <span className="text-emerald-400">⚡</span>
+        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-2.5">
           <span>Try a sample:</span>
         </div>
 
@@ -142,17 +141,13 @@ export default function RequestForm() {
                 key={idx}
                 type="button"
                 onClick={() => applySample(sample)}
-                className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 ${
-                  isAttack
-                    ? 'bg-rose-950/20 hover:bg-rose-950/40 text-rose-300 border-rose-900/40 hover:border-rose-500/50'
-                    : 'bg-emerald-950/20 hover:bg-emerald-950/40 text-emerald-300 border-emerald-900/40 hover:border-emerald-500/50'
-                }`}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors"
               >
                 <span
                   className={`text-[9px] font-mono px-1 py-0.2 rounded uppercase ${
                     isAttack
-                      ? 'bg-rose-500/20 text-rose-300'
-                      : 'bg-emerald-500/20 text-emerald-300'
+                      ? 'bg-rose-100 text-rose-800'
+                      : 'bg-emerald-100 text-emerald-800'
                   }`}
                 >
                   {sample.badge}
@@ -170,16 +165,16 @@ export default function RequestForm() {
           <div className="flex items-center justify-between mb-1.5">
             <label
               htmlFor="instruction-field"
-              className="text-xs font-medium text-slate-200 flex items-center gap-1.5"
+              className="text-xs font-medium text-slate-700 flex items-center gap-1.5"
             >
               <span>Instruction</span>
-              <span className="text-rose-400">*</span>
+              <span className="text-rose-600">*</span>
             </label>
             <span
               className={`text-xs font-mono ${
                 instruction.length >= 480
-                  ? 'text-amber-400 font-bold'
-                  : 'text-slate-400'
+                  ? 'text-amber-600 font-bold'
+                  : 'text-slate-500'
               }`}
             >
               {instruction.length} / 500
@@ -195,7 +190,7 @@ export default function RequestForm() {
             onChange={(e) => setInstruction(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="e.g., Send ₹500 to Rahul or What is my balance?"
-            className="w-full rounded-lg bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-colors resize-y font-sans"
+            className="w-full rounded-md bg-white border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors resize-y font-sans"
           />
         </div>
 
@@ -204,16 +199,16 @@ export default function RequestForm() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1.5 gap-1">
             <label
               htmlFor="memo-field"
-              className="text-xs font-medium text-slate-200 flex items-center gap-1.5"
+              className="text-xs font-medium text-slate-700 flex items-center gap-1.5"
             >
               <span>Payment Memo</span>
-              <span className="text-slate-400 text-[11px] font-normal">(optional)</span>
+              <span className="text-slate-500 text-[11px] font-normal">(optional)</span>
             </label>
 
             {/* Explanation beside the memo field */}
-            <div className="flex items-center gap-1.5 text-[11px] text-amber-400/90 font-mono bg-amber-950/20 px-2 py-0.5 rounded border border-amber-900/30">
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-mono bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
               <svg
-                className="w-3.5 h-3.5 text-amber-400 shrink-0"
+                className="w-3.5 h-3.5 text-slate-500 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -239,9 +234,9 @@ export default function RequestForm() {
               onChange={(e) => setMemo(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="e.g., groceries, dinner split, coffee"
-              className="w-full rounded-lg bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-colors pr-16 font-sans"
+              className="w-full rounded-md bg-white border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors pr-16 font-sans"
             />
-            <span className="absolute right-3 top-2.5 text-xs font-mono text-slate-400 pointer-events-none">
+            <span className="absolute right-3 top-2.5 text-xs font-mono text-slate-500 pointer-events-none">
               {memo.length}/140
             </span>
           </div>
@@ -249,8 +244,8 @@ export default function RequestForm() {
 
         {/* Action Bar */}
         <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="text-xs text-slate-400 flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-300 rounded border border-slate-700">
+          <div className="text-xs text-slate-500 flex items-center gap-2">
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
               Ctrl+Enter
             </kbd>
             <span>to analyze immediately</span>
@@ -260,16 +255,16 @@ export default function RequestForm() {
             type="submit"
             data-testid="analyze-button"
             disabled={isSubmitDisabled}
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md ${
+            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
               isSubmitDisabled
-                ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                : 'bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 shadow-emerald-950/50 hover:shadow-emerald-500/20'
+                ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                : 'bg-slate-900 hover:bg-slate-800 text-white'
             }`}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-1 h-4 w-4 text-slate-950"
+                  className="animate-spin -ml-1 mr-1 h-4 w-4 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -292,7 +287,7 @@ export default function RequestForm() {
             ) : (
               <>
                 <svg
-                  className="w-4 h-4"
+                  className="w-4 h-4 text-slate-400"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"

@@ -1,34 +1,39 @@
 @import "tailwindcss";
 
-@theme {
-  --color-console-bg: #020617;
-  --color-console-panel: #0f172a;
-  --color-console-panel-muted: #1e293b;
-  --color-console-border: #1e293b;
-  --color-console-border-muted: #334155;
-  --color-console-text: #f1f5f9;
-  --color-console-text-muted: #94a3b8;
-  --color-approved: #10b981;
-  --color-blocked: #f43f5e;
-  --color-warning: #f59e0b;
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+@theme {
+  --color-console-bg: #f8fafc;
+  --color-console-panel: #ffffff;
+  --color-console-panel-muted: #f1f5f9;
+  --color-console-border: #e2e8f0;
+  --color-console-border-muted: #cbd5e1;
+  --color-console-text: #0f172a;
+  --color-console-text-muted: #64748b;
+  --color-approved: #059669;
+  --color-blocked: #e11d48;
+  --color-warning: #d97706;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 body {
   margin: 0;
-  background-color: #020617;
-  color: #f1f5f9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
-/* Accessible visible focus rings across all interactive elements */
+/* Minimal, high-contrast, visible focus rings with no glow */
 :focus-visible {
-  outline: 2px solid #10b981 !important;
+  outline: 2px solid #0f172a !important;
   outline-offset: 2px !important;
 }
 
@@ -38,8 +43,288 @@ textarea:focus-visible,
 select:focus-visible,
 [role="tab"]:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #10b981 !important;
+  outline: 2px solid #0f172a !important;
   outline-offset: 2px !important;
+}
+
+/* Minimal, High-Contrast Dark Mode System */
+.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+.dark body,
+html.dark body,
+[data-theme="dark"] body {
+  background-color: #090d16;
+  color: #f8fafc;
+}
+
+/* Dark mode visible focus rings */
+.dark :focus-visible,
+[data-theme="dark"] :focus-visible {
+  outline: 2px solid #f8fafc !important;
+  outline-offset: 2px !important;
+}
+
+.dark button:focus-visible,
+.dark input:focus-visible,
+.dark textarea:focus-visible,
+.dark select:focus-visible,
+.dark [role="tab"]:focus-visible,
+.dark [tabindex]:focus-visible,
+[data-theme="dark"] button:focus-visible,
+[data-theme="dark"] input:focus-visible,
+[data-theme="dark"] textarea:focus-visible,
+[data-theme="dark"] select:focus-visible,
+[data-theme="dark"] [role="tab"]:focus-visible,
+[data-theme="dark"] [tabindex]:focus-visible {
+  outline: 2px solid #f8fafc !important;
+  outline-offset: 2px !important;
+}
+
+/* Dark mode surface & component transformations: pure minimal contrast */
+.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-50\/50,
+.dark .bg-slate-50\/40,
+.dark .bg-slate-50\/30,
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/50,
+[data-theme="dark"] .bg-slate-50\/40,
+[data-theme="dark"] .bg-slate-50\/30 {
+  background-color: #090d16 !important;
+}
+
+.dark .bg-slate-100,
+[data-theme="dark"] .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-slate-200,
+[data-theme="dark"] .bg-slate-200 {
+  background-color: #334155 !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-slate-200 {
+  border-color: #1e293b !important;
+}
+
+.dark .border-slate-300,
+[data-theme="dark"] .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+.dark .divide-slate-100 > *,
+.dark .divide-slate-200 > *,
+[data-theme="dark"] .divide-slate-100 > *,
+[data-theme="dark"] .divide-slate-200 > * {
+  border-color: #1e293b !important;
+}
+
+.dark .text-slate-900,
+[data-theme="dark"] .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-800,
+[data-theme="dark"] .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-slate-700,
+[data-theme="dark"] .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-slate-600,
+[data-theme="dark"] .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-500,
+[data-theme="dark"] .text-slate-500 {
+  color: #64748b !important;
+}
+
+.dark .text-slate-400,
+[data-theme="dark"] .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* Sidebar Navigation Tabs in Dark Mode: refined, non-glaring elevated state */
+.dark nav[role="tablist"] button[aria-selected="true"],
+[data-theme="dark"] nav[role="tablist"] button[aria-selected="true"] {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+.dark nav[role="tablist"] button[aria-selected="false"],
+[data-theme="dark"] nav[role="tablist"] button[aria-selected="false"] {
+  color: #94a3b8 !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+.dark nav[role="tablist"] button[aria-selected="false"]:hover,
+[data-theme="dark"] nav[role="tablist"] button[aria-selected="false"]:hover {
+  background-color: #131c2e !important;
+  color: #f8fafc !important;
+}
+
+/* Inverted Dark Mode Primary Submit / Action Buttons */
+.dark button.bg-slate-900:not([aria-selected]):not(:disabled),
+[data-theme="dark"] button.bg-slate-900:not([aria-selected]):not(:disabled) {
+  background-color: #f8fafc !important;
+  color: #090d16 !important;
+  border: 1px solid #f8fafc !important;
+}
+
+.dark button.bg-slate-900:not([aria-selected]):not(:disabled):hover,
+[data-theme="dark"] button.bg-slate-900:not([aria-selected]):not(:disabled):hover {
+  background-color: #e2e8f0 !important;
+  color: #090d16 !important;
+}
+
+/* Disabled buttons in Dark Mode */
+.dark button:disabled,
+.dark button[disabled],
+[data-theme="dark"] button:disabled,
+[data-theme="dark"] button[disabled] {
+  background-color: #131c2e !important;
+  border-color: #1e293b !important;
+  color: #475569 !important;
+  cursor: not-allowed !important;
+}
+
+/* Sample prompt chips inside forms: elevated subtle cards */
+.dark button.bg-slate-50,
+[data-theme="dark"] button.bg-slate-50 {
+  background-color: #131c2e !important;
+  border-color: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+.dark button.bg-slate-50:hover,
+[data-theme="dark"] button.bg-slate-50:hover {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Form input fields in Dark Mode */
+.dark input[type="text"],
+.dark input[type="search"],
+.dark textarea,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] textarea {
+  background-color: #0b1120 !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Keyboard hint in Dark Mode */
+.dark kbd,
+[data-theme="dark"] kbd {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+/* Status Badges in Dark Mode */
+.dark .bg-emerald-50,
+[data-theme="dark"] .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+  color: #6ee7b7 !important;
+  border-color: #065f46 !important;
+}
+
+.dark .bg-rose-50,
+[data-theme="dark"] .bg-rose-50 {
+  background-color: rgba(136, 19, 55, 0.35) !important;
+  color: #fda4af !important;
+  border-color: #9f1239 !important;
+}
+
+.dark .bg-amber-50,
+[data-theme="dark"] .bg-amber-50 {
+  background-color: rgba(120, 53, 15, 0.35) !important;
+  color: #fcd34d !important;
+  border-color: #92400e !important;
+}
+
+.dark .bg-emerald-100,
+[data-theme="dark"] .bg-emerald-100 {
+  background-color: rgba(6, 78, 59, 0.45) !important;
+  color: #6ee7b7 !important;
+}
+
+.dark .bg-rose-100,
+[data-theme="dark"] .bg-rose-100 {
+  background-color: rgba(136, 19, 55, 0.45) !important;
+  color: #fda4af !important;
+}
+
+.dark .bg-amber-100,
+[data-theme="dark"] .bg-amber-100 {
+  background-color: rgba(120, 53, 15, 0.45) !important;
+  color: #fcd34d !important;
+}
+
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+[data-theme="dark"] .text-emerald-700,
+[data-theme="dark"] .text-emerald-800 {
+  color: #6ee7b7 !important;
+}
+
+.dark .text-rose-700,
+.dark .text-rose-800,
+[data-theme="dark"] .text-rose-700,
+[data-theme="dark"] .text-rose-800 {
+  color: #fda4af !important;
+}
+
+.dark .border-emerald-300,
+[data-theme="dark"] .border-emerald-300 {
+  border-color: #059669 !important;
+}
+
+.dark .border-rose-300,
+[data-theme="dark"] .border-rose-300 {
+  border-color: #e11d48 !important;
+}
+
+.dark .border-amber-300,
+[data-theme="dark"] .border-amber-300 {
+  border-color: #d97706 !important;
+}
+
+/* Syntax highlighting in JSON inspector */
+.dark .text-blue-700,
+[data-theme="dark"] .text-blue-700 {
+  color: #60a5fa !important;
+}
+
+.dark .text-purple-700,
+[data-theme="dark"] .text-purple-700 {
+  color: #c084fc !important;
 }
 
 /* Accessibility: Respect prefers-reduced-motion */

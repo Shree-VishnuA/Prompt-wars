@@ -15,7 +15,8 @@ export const ACTIONS = {
   SET_DRAFT_INPUT: 'SET_DRAFT_INPUT',
   SET_SERVER_OFFLINE: 'SET_SERVER_OFFLINE',
   ADD_TOAST: 'ADD_TOAST',
-  REMOVE_TOAST: 'REMOVE_TOAST'
+  REMOVE_TOAST: 'REMOVE_TOAST',
+  SET_THEME: 'SET_THEME'
 };
 
 export const initialState = {
@@ -30,7 +31,8 @@ export const initialState = {
   activeTab: 'Firewall',
   draftInput: null,
   serverOffline: false,
-  toasts: []
+  toasts: [],
+  theme: 'light'
 };
 
 export function createServiceDegradedVerdict(errorMsg = 'Service unavailable or network failure') {
@@ -133,8 +135,21 @@ export function appReducer(state, action) {
       };
     }
 
-    case ACTIONS.SET_ACTIVE_TAB:
-      return { ...state, activeTab: action.payload };
+    case ACTIONS.SET_ACTIVE_TAB: {
+      const nextTab = action.payload || 'Firewall';
+      if (typeof window !== 'undefined' && !(typeof process !== 'undefined' && process.env?.NODE_ENV === 'test')) {
+        try {
+          localStorage.setItem('bankism_active_tab', nextTab);
+          const slug = nextTab.toLowerCase().replace(/\s+/g, '-');
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', `#${slug}`);
+          }
+        } catch {
+          // ignore
+        }
+      }
+      return { ...state, activeTab: nextTab };
+    }
 
     case ACTIONS.SET_DRAFT_INPUT:
       return { ...state, draftInput: action.payload };
@@ -157,6 +172,25 @@ export function appReducer(state, action) {
         toasts: state.toasts.filter((t) => t.id !== action.payload)
       };
 
+    case ACTIONS.SET_THEME: {
+      const nextTheme = action.payload === 'dark' ? 'dark' : 'light';
+      if (typeof window !== 'undefined' && !(typeof process !== 'undefined' && process.env?.NODE_ENV === 'test')) {
+        try {
+          localStorage.setItem('bankism_theme', nextTheme);
+          if (nextTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        } catch {
+          // ignore
+        }
+      }
+      return { ...state, theme: nextTheme };
+    }
+
     default:
       return state;
   }
@@ -164,11 +198,100 @@ export function appReducer(state, action) {
 
 export const AppContext = createContext(null);
 
+export function getInitialTheme() {
+  if (typeof window === 'undefined') return 'light';
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
+    return 'light';
+  }
+  try {
+    const saved = localStorage.getItem('bankism_theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+  } catch {
+    // ignore
+  }
+  return 'light';
+}
+
+export function getSavedActiveTab(defaultTab = 'Firewall') {
+  if (typeof window === 'undefined') return defaultTab;
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
+    return defaultTab;
+  }
+  const VALID_TABS = ['Firewall', 'Replay Lab', 'Benchmark', 'Audit'];
+  try {
+    const hash = (window.location.hash || '').replace(/^#/, '').trim();
+    if (hash) {
+      const match = VALID_TABS.find(
+        (t) =>
+          t.toLowerCase().replace(/\s+/g, '-') === hash.toLowerCase() ||
+          t.toLowerCase() === hash.toLowerCase()
+      );
+      if (match) return match;
+    }
+    const saved = localStorage.getItem('bankism_active_tab');
+    if (saved) {
+      const match = VALID_TABS.find(
+        (t) =>
+          t.toLowerCase().replace(/\s+/g, '-') === saved.toLowerCase().replace(/\s+/g, '-') ||
+          t.toLowerCase() === saved.toLowerCase() ||
+          t === saved
+      );
+      if (match) return match;
+    }
+  } catch {
+    // ignore storage restrictions
+  }
+  return defaultTab;
+}
+
 export function AppProvider({ children, initialValue = {} }) {
+  const resolvedTab =
+    initialValue && initialValue.activeTab !== undefined
+      ? initialValue.activeTab
+      : getSavedActiveTab(initialState.activeTab);
+
+  const resolvedTheme =
+    initialValue && initialValue.theme !== undefined
+      ? initialValue.theme
+      : getInitialTheme();
+
   const [state, dispatch] = useReducer(appReducer, {
     ...initialState,
-    ...initialValue
+    ...initialValue,
+    activeTab: resolvedTab,
+    theme: resolvedTheme
   });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') return;
+    try {
+      if (state.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch {
+      // ignore
+    }
+  }, [state.theme]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleHash = () => {
+      const fromHash = getSavedActiveTab(state.activeTab);
+      if (fromHash && fromHash !== state.activeTab) {
+        dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: fromHash });
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, [state.activeTab]);
 
   const removeToast = useCallback((id) => {
     dispatch({ type: ACTIONS.REMOVE_TOAST, payload: id });
@@ -306,6 +429,13 @@ export function AppProvider({ children, initialValue = {} }) {
     draftInput: state.draftInput,
     serverOffline: state.serverOffline,
     toasts: state.toasts,
+    theme: state.theme,
+    setTheme: (t) => dispatch({ type: ACTIONS.SET_THEME, payload: t }),
+    toggleTheme: () =>
+      dispatch({
+        type: ACTIONS.SET_THEME,
+        payload: state.theme === 'dark' ? 'light' : 'dark'
+      }),
     addToast,
     removeToast,
     fetchHealth,
