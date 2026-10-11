@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-console-bg: #020617;
+  --color-console-panel: #0f172a;
+  --color-console-panel-muted: #1e293b;
+  --color-console-border: #1e293b;
+  --color-console-border-muted: #334155;
+  --color-console-text: #f1f5f9;
+  --color-console-text-muted: #94a3b8;
+  --color-approved: #10b981;
+  --color-blocked: #f43f5e;
+  --color-warning: #f59e0b;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  margin: 0;
+  background-color: #020617;
+  color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  min-height: 100vh;
+}

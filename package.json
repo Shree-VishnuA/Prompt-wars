@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run dev --workspaces",
-    "build": "npm run build --workspaces",
-    "start": "npm run start --workspaces",
-    "test": "npm run test --workspaces"
+    "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "start": "node server/src/index.js",
+    "test": "npm --prefix server test && npm --prefix client test"
   },
   "workspaces": [
     "server",
     "client"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
 }
