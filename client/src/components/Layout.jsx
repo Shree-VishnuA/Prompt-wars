@@ -8,6 +8,7 @@ import AccountCard from './AccountCard.jsx';
 import ConfirmTransfer from './ConfirmTransfer.jsx';
 import AuthButton from './AuthButton.jsx';
 import ReplayLab from './ReplayLab.jsx';
+import BenchmarkPage from './BenchmarkPage.jsx';
 
 function StatusPill({ health }) {
   const llmStatus = health?.llm || 'offline';
@@ -229,7 +230,7 @@ export default function Layout() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentTab === 'Firewall' && <FirewallPlaceholder />}
         {currentTab === 'Replay Lab' && <ReplayLab />}
-        {currentTab === 'Benchmark' && <BenchmarkPlaceholder />}
+        {currentTab === 'Benchmark' && <BenchmarkPage />}
         {currentTab === 'Audit' && <AuditPlaceholder />}
       </main>
 

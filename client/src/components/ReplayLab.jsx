@@ -24,16 +24,23 @@ export const MATRIX_LAYERS = [
 ];
 
 export default function ReplayLab() {
-  const { setActiveTab, setDraftInput } = useApp();
+  const { setActiveTab, setDraftInput, draftInput } = useApp();
 
   const [cases, setCases] = useState([]);
   const [loadingCases, setLoadingCases] = useState(true);
   const [casesError, setCasesError] = useState(null);
 
   const [selectedCaseId, setSelectedCaseId] = useState(null);
-  const [instruction, setInstruction] = useState('');
-  const [memo, setMemo] = useState('');
+  const [instruction, setInstruction] = useState(draftInput?.instruction || '');
+  const [memo, setMemo] = useState(draftInput?.memo || '');
   const [useLlm, setUseLlm] = useState(false);
+
+  useEffect(() => {
+    if (draftInput) {
+      if (draftInput.instruction !== undefined) setInstruction(draftInput.instruction);
+      if (draftInput.memo !== undefined) setMemo(draftInput.memo || '');
+    }
+  }, [draftInput]);
 
   const [mutating, setMutating] = useState(false);
   const [mutationResults, setMutationResults] = useState(null);
