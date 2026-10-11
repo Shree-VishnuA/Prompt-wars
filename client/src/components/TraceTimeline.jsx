@@ -152,6 +152,7 @@ function TraceRow({ step = {}, isFirstBlock, isLast }) {
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
+              aria-label={`Toggle findings for ${layerTitle}`}
               className="inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-400 hover:text-slate-200 transition-colors"
             >
               <svg

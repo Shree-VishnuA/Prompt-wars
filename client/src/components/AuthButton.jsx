@@ -134,6 +134,7 @@ export default function AuthButton() {
           type="button"
           onClick={handleSignOut}
           disabled={signingOut}
+          aria-label="Sign out of Google session"
           className="text-[11px] font-mono text-slate-400 hover:text-rose-300 transition-colors ml-1 border-l border-slate-800 pl-2"
         >
           {signingOut ? 'Signing out...' : 'Sign out'}

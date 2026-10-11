@@ -110,7 +110,7 @@ export default function AuditLog() {
           {/* Action / Refresh Bar */}
           <div className="flex items-center gap-3 self-start sm:self-auto">
             {lastRefreshed && (
-              <span className="text-[11px] font-mono text-slate-500">
+              <span className="text-[11px] font-mono text-slate-400">
                 Synced {formatTime(lastRefreshed.toISOString())}
               </span>
             )}
@@ -120,6 +120,7 @@ export default function AuditLog() {
               data-testid="audit-refresh-button"
               onClick={() => fetchAuditLog(false)}
               disabled={loading}
+              aria-label="Refresh security audit log"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors disabled:opacity-50"
             >
               <svg
@@ -239,7 +240,7 @@ export default function AuditLog() {
                         <div className="font-semibold text-slate-200">
                           {formatTime(entry.time)}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-sans">
+                        <div className="text-[10px] text-slate-400 font-sans">
                           {formatDate(entry.time)}
                         </div>
                       </td>
@@ -267,7 +268,7 @@ export default function AuditLog() {
                         <span className="font-sans text-slate-200 text-xs">
                           {getThreatCategoryLabel(entry.threat_category)}
                         </span>
-                        <div className="text-[10px] text-slate-500 uppercase">
+                        <div className="text-[10px] text-slate-400 uppercase">
                           {entry.threat_category}
                         </div>
                       </td>
@@ -294,7 +295,7 @@ export default function AuditLog() {
                       {/* Layers Flagged */}
                       <td className="py-3 px-4 whitespace-nowrap">
                         {layers.length === 0 ? (
-                          <span className="text-slate-500 text-[11px] italic">
+                          <span className="text-slate-400 text-[11px] italic">
                             None (all passed)
                           </span>
                         ) : (
@@ -318,7 +319,7 @@ export default function AuditLog() {
           </div>
 
           {/* Table Footer */}
-          <div className="px-4 py-2.5 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+          <div className="px-4 py-2.5 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
             <div>
               Displaying {entries.length} recent audit {entries.length === 1 ? 'event' : 'events'} (max 50)
             </div>

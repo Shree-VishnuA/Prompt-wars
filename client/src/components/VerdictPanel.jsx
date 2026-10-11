@@ -196,7 +196,11 @@ export default function VerdictPanel({ verdict: propVerdict } = {}) {
   const truncatedRationale = (verdict.rationale || '').slice(0, 300);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm space-y-5">
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      className="rounded-xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-xl backdrop-blur-sm space-y-5"
+    >
       {/* Top Bar: Decision Banner & Metadata */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Large Decision Banner */}

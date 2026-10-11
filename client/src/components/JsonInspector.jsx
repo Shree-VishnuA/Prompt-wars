@@ -166,6 +166,7 @@ export default function JsonInspector({ verdict: propVerdict } = {}) {
           <button
             type="button"
             onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label="JSON Verdict Inspector"
             className="flex items-center gap-2 text-sm font-semibold text-slate-100 hover:text-emerald-400 transition-colors"
           >
             <svg
@@ -201,6 +202,7 @@ export default function JsonInspector({ verdict: propVerdict } = {}) {
           <button
             type="button"
             onClick={handleCopy}
+            aria-label="Copy JSON"
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium border transition-all ${
               copied
                 ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/50'

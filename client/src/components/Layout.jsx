@@ -148,6 +148,32 @@ export default function Layout() {
     (t) => t.id.toLowerCase() === (activeTab || '').toLowerCase() || t.label.toLowerCase() === (activeTab || '').toLowerCase()
   )?.id || 'Firewall';
 
+  const tabRefs = React.useRef([]);
+
+  const handleTabKeyDown = (e) => {
+    const currentIndex = TABS.findIndex((t) => t.id === currentTab);
+    let nextIndex = null;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % TABS.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      nextIndex = TABS.length - 1;
+    }
+
+    if (nextIndex !== null) {
+      setActiveTab(TABS[nextIndex].label);
+      tabRefs.current[nextIndex]?.focus();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* Global Offline / Server-Unreachable Banner */}
@@ -155,7 +181,7 @@ export default function Layout() {
         <div
           role="alert"
           data-testid="offline-banner"
-          className="bg-rose-950/95 border-b border-rose-500/50 text-rose-200 px-4 py-2.5 text-xs font-mono flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50 shadow-lg backdrop-blur-md"
+          className="bg-rose-950/95 border-b border-rose-500/50 text-rose-200 px-3 sm:px-6 py-2.5 text-xs font-mono flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50 shadow-lg backdrop-blur-md"
         >
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping shrink-0" />
@@ -169,6 +195,7 @@ export default function Layout() {
           <button
             type="button"
             onClick={() => fetchHealth && fetchHealth()}
+            aria-label="Retry connection"
             className="px-3 py-1 rounded bg-rose-900/80 hover:bg-rose-800 text-rose-100 border border-rose-600/50 text-[11px] font-semibold transition-colors"
           >
             Retry connection
@@ -178,7 +205,7 @@ export default function Layout() {
 
       {/* Top Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3.5 gap-4">
             {/* Logo and Brand */}
             <div className="flex items-center gap-3">
@@ -215,10 +242,10 @@ export default function Layout() {
             </div>
 
             {/* Right Header: Status Pill and Account Context */}
-            <div className="flex items-center flex-wrap gap-3">
+            <div className="flex items-center flex-wrap gap-2.5 sm:gap-3">
               {account && (
                 <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-slate-950/70 border border-slate-800 rounded-lg text-xs font-mono text-slate-300">
-                  <span className="text-slate-500">ACC:</span>
+                  <span className="text-slate-400">ACC:</span>
                   <span className="text-slate-200">{account.account_id || 'ACC-1001'}</span>
                   <span className="text-slate-600">|</span>
                   <span className="text-emerald-400 font-semibold">
@@ -233,17 +260,28 @@ export default function Layout() {
             </div>
           </div>
 
-          {/* Navigation Tab Bar (Plain State, Responsive Stack on Mobile) */}
-          <nav className="flex flex-col sm:flex-row gap-1 border-t border-slate-800/60 pt-2 pb-1.5">
-            {TABS.map((tab) => {
+          {/* Navigation Tab Bar with WAI-ARIA role="tablist" and Keyboard Navigation */}
+          <nav
+            role="tablist"
+            aria-label="Security Console Sections"
+            onKeyDown={handleTabKeyDown}
+            className="flex flex-col sm:flex-row gap-1 border-t border-slate-800/60 pt-2 pb-1.5"
+          >
+            {TABS.map((tab, idx) => {
               const isActive = currentTab === tab.id;
+              const tabSlug = tab.id.toLowerCase().replace(/\s+/g, '-');
               return (
                 <button
                   key={tab.id}
+                  id={`tab-${tabSlug}`}
+                  aria-selected={isActive}
+                  aria-controls={`panel-${tabSlug}`}
+                  tabIndex={isActive ? 0 : -1}
+                  ref={(el) => { tabRefs.current[idx] = el; }}
                   onClick={() => setActiveTab(tab.label)}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 text-left sm:text-center ${
                     isActive
-                      ? 'bg-slate-800 text-emerald-400 border border-slate-700/80 shadow-sm'
+                      ? 'bg-slate-800 text-emerald-400 border border-slate-700/80 shadow-sm font-semibold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
                   }`}
                 >
@@ -255,35 +293,43 @@ export default function Layout() {
         </div>
       </header>
 
-      {/* Main Area with ErrorBoundary around each tab */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Area with ErrorBoundary around each tab and WAI-ARIA tabpanel */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
         {currentTab === 'Firewall' && (
-          <ErrorBoundary panelName="Firewall">
-            <FirewallPlaceholder />
-          </ErrorBoundary>
+          <div role="tabpanel" id="panel-firewall" aria-labelledby="tab-firewall" tabIndex={0} className="focus:outline-none">
+            <ErrorBoundary panelName="Firewall">
+              <FirewallPlaceholder />
+            </ErrorBoundary>
+          </div>
         )}
         {currentTab === 'Replay Lab' && (
-          <ErrorBoundary panelName="Replay Lab">
-            <ReplayLab />
-          </ErrorBoundary>
+          <div role="tabpanel" id="panel-replay-lab" aria-labelledby="tab-replay-lab" tabIndex={0} className="focus:outline-none">
+            <ErrorBoundary panelName="Replay Lab">
+              <ReplayLab />
+            </ErrorBoundary>
+          </div>
         )}
         {currentTab === 'Benchmark' && (
-          <ErrorBoundary panelName="Benchmark">
-            <BenchmarkPage />
-          </ErrorBoundary>
+          <div role="tabpanel" id="panel-benchmark" aria-labelledby="tab-benchmark" tabIndex={0} className="focus:outline-none">
+            <ErrorBoundary panelName="Benchmark">
+              <BenchmarkPage />
+            </ErrorBoundary>
+          </div>
         )}
         {currentTab === 'Audit' && (
-          <ErrorBoundary panelName="Audit">
-            <AuditLog />
-          </ErrorBoundary>
+          <div role="tabpanel" id="panel-audit" aria-labelledby="tab-audit" tabIndex={0} className="focus:outline-none">
+            <ErrorBoundary panelName="Audit">
+              <AuditLog />
+            </ErrorBoundary>
+          </div>
         )}
       </main>
 
       {/* Accessible Toast Notifications */}
       <Toast />
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 py-4 text-center text-xs text-slate-600">
+      {/* Footer with AA Contrast text */}
+      <footer className="border-t border-slate-900 py-4 text-center text-xs text-slate-400">
         Bankism Security Operations • Multi-Layer Prompt Injection Defense
       </footer>
     </div>

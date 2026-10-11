@@ -40,6 +40,7 @@ export default function AccountCard() {
           type="button"
           onClick={handleManualRefresh}
           disabled={refreshing}
+          aria-label="Refresh account ledger balance and transactions"
           title="Refresh account data"
           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700"
         >
@@ -75,11 +76,11 @@ export default function AccountCard() {
           <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
             Recent Activity ({recentTransactions.length})
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Last 5</span>
+          <span className="text-[10px] text-slate-400 font-mono">Last 5</span>
         </div>
 
         {recentTransactions.length === 0 ? (
-          <div className="rounded-lg bg-slate-950/50 border border-slate-800/60 p-3 text-center text-xs text-slate-500 font-mono">
+          <div className="rounded-lg bg-slate-950/50 border border-slate-800/60 p-3 text-center text-xs text-slate-400 font-mono">
             No transactions yet.
           </div>
         ) : (
@@ -95,7 +96,7 @@ export default function AccountCard() {
                     <p className="text-slate-200 font-medium truncate">
                       {tx.counterparty || 'Counterparty'}
                     </p>
-                    <p className="text-[10px] text-slate-500 truncate font-mono">
+                    <p className="text-[10px] text-slate-400 truncate font-mono">
                       {tx.memo || (tx.date ? new Date(tx.date).toLocaleDateString('en-IN') : '')}
                     </p>
                   </div>
@@ -108,7 +109,7 @@ export default function AccountCard() {
                       {isCredit ? '+' : '-'}
                       {formatPaise(tx.amount_paise)}
                     </span>
-                    <span className="text-[9px] text-slate-500 uppercase">
+                    <span className="text-[9px] text-slate-400 uppercase">
                       {tx.type}
                     </span>
                   </div>
